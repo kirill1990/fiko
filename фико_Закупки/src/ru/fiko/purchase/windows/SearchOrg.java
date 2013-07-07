@@ -22,6 +22,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
 import ru.fiko.purchase.main.Purchase;
+import ru.fiko.purchase.supports.CheckListItem;
+import ru.fiko.purchase.supports.CheckListRenderer;
 
 public class SearchOrg extends JPanel {
 
@@ -111,46 +113,5 @@ public class SearchOrg extends JPanel {
 	filter.add(f2, BorderLayout.CENTER);
 
 	this.validate();
-    }
-
-    class CheckListItem {
-	private String label;
-	private boolean isSelected = false;
-
-	public CheckListItem(String label) {
-	    this.label = label;
-	}
-
-	public boolean isSelected() {
-	    return isSelected;
-	}
-
-	public void setSelected(boolean isSelected) {
-	    this.isSelected = isSelected;
-	}
-
-	public String toString() {
-	    return label;
-	}
-    }
-
-    // Handles rendering cells in the list using a check box
-
-    class CheckListRenderer extends JCheckBox implements ListCellRenderer {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6054410183836695681L;
-
-	public Component getListCellRendererComponent(JList list, Object value,
-		int index, boolean isSelected, boolean hasFocus) {
-	    setEnabled(list.isEnabled());
-	    setSelected(((CheckListItem) value).isSelected());
-	    setFont(list.getFont());
-	    setBackground(list.getBackground());
-	    setForeground(list.getForeground());
-	    setText(value.toString());
-	    return this;
-	}
     }
 }

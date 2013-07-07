@@ -1,7 +1,6 @@
 package ru.fiko.purchase.windows;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
@@ -18,7 +17,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
 import ru.fiko.purchase.main.Purchase;
@@ -100,12 +98,11 @@ public class SearchOrg extends JPanel {
 		list.repaint(list.getCellBounds(index, index));
 	    }
 	});
-	
+
 	JPanel f22 = new JPanel(new BorderLayout());
 	JCheckBox check = new JCheckBox("Регистрация");
 	f22.add(new JLabel("Вид деятельности:"), BorderLayout.WEST);
 	f22.add(check, BorderLayout.EAST);
-	
 
 	f2.add(f22, BorderLayout.NORTH);
 	f2.add(new JScrollPane(list), BorderLayout.CENTER);

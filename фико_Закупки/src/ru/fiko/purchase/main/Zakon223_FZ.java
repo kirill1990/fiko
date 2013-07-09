@@ -17,9 +17,11 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import ru.fiko.purchase.supports.ComboItemRegistr;
+import ru.fiko.purchase.windows.Organization;
 import ru.fiko.purchase.windows.SearchOrg;
 
-public class Purchase extends JFrame {
+public class Zakon223_FZ extends JFrame {
 
     /**
      * 
@@ -28,6 +30,9 @@ public class Purchase extends JFrame {
 
     private static int WIDTH = 800;
     private static int HEIGHT = 500;
+
+    private SearchOrg searchOrg;
+    private Organization organization;
 
     /**
      * Путь к распложению базы данных
@@ -38,7 +43,7 @@ public class Purchase extends JFrame {
      * Принадлежность к видам юридическиз лиц, определенных в ч. 2 статьи 1
      * Закона 223-ФЗ<br>
      * <br>
-     * Заполняются только при создание бд.
+     * !!! Предупреждение: используется только при создание бд!
      */
     private static String[] type_of_org_title = {
 	    "Государственная корпорация",
@@ -56,7 +61,11 @@ public class Purchase extends JFrame {
 	    "13",
 	    "14" };
 
-    public Purchase() throws SQLException, ClassNotFoundException {
+    public static Object[] registr_items = {
+	    new ComboItemRegistr(true, "Зарегистрирована"),
+	    new ComboItemRegistr(false, "Не зарегистрирована") };
+
+    public Zakon223_FZ() throws SQLException, ClassNotFoundException {
 	/*
 	 * Инициализация параметров окна
 	 */
@@ -83,9 +92,7 @@ public class Purchase extends JFrame {
 	/**
 	 * Первое окно - окно фильтрации организаций
 	 */
-	this.getContentPane().add(new SearchOrg());
-
-	this.validate();
+	setPanelSearchOrg();
     }
 
     public static void main(String[] args) throws ClassNotFoundException,
@@ -102,12 +109,11 @@ public class Purchase extends JFrame {
 	 */
 	Class.forName("org.sqlite.JDBC");
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchase.PATHTODB);
+		+ Zakon223_FZ.PATHTODB);
 
 	Statement stat = conn.createStatement();
 
-	stat.executeUpdate("CREATE TABLE IF NOT EXISTS organization(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, inn STRING, name STRING, regist INTEGER, polojen_ooc STRING, types_of_org_id INTEGER);");
-
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS organization(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, inn STRING, name STRING, regist STRING, polojen_ooc STRING);");
 	stat.executeUpdate("CREATE TABLE IF NOT EXISTS types_of_org(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, type_of_org_id INTEGER, organization_id INTEGER);");
 	stat.executeUpdate("CREATE TABLE IF NOT EXISTS type_of_org(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
 
@@ -140,7 +146,40 @@ public class Purchase extends JFrame {
 	stat.close();
 	conn.close();
 
-	new Purchase();
+	new Zakon223_FZ();
+    }
+
+    public void setPanelSearchOrg() throws SQLException, ClassNotFoundException {
+	this.getContentPane().removeAll();
+
+	if (searchOrg != null)
+	    this.getContentPane().add(searchOrg);
+	else
+	    this.getContentPane().add(searchOrg = new SearchOrg(this));
+
+	this.validate();
+	this.repaint();
+    }
+
+    public void setPanelOrganization(int id) throws ClassNotFoundException,
+	    SQLException {
+	this.getContentPane().removeAll();
+
+	if (organization != null && organization.getId() == id)
+	    this.getContentPane().add(organization);
+	else
+	    this.getContentPane()
+		    .add(organization = new Organization(this, id));
+
+	this.validate();
+	this.repaint();
+    }
+
+    public void setPanelPurchase() {
+	this.getContentPane().removeAll();
+
+	this.validate();
+	this.repaint();
     }
 
 }

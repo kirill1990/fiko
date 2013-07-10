@@ -61,6 +61,38 @@ public class Zakon223_FZ extends JFrame {
 	    "13",
 	    "14" };
 
+    /**
+     * Cпособы размещения заказа<br>
+     * <br>
+     * !!! Предупреждение: используется только при создание бд!
+     */
+    private static String[] aspect_title = {
+	    "Закупка у единственного поставщика (исполнителя, подрядчика)",
+	    "Запрос котировок",
+	    "Запрос предложений",
+	    "Запрос цен",
+	    "Открытый аукцион",
+	    "Открытый аукцион в электронной форме",
+	    "Открытый конкурс" };
+
+    /**
+     * Классификация закупки<br>
+     * <br>
+     * !!! Предупреждение: используется только при создание бд!
+     */
+    private static String[] type_title = { "Товары", "Услуги", "Работа", };
+
+    /**
+     * Предмет закупки<br>
+     * <br>
+     * !!! Предупреждение: используется только при создание бд!
+     */
+    private static String[] subject_title = {
+	    "Медоборудование",
+	    "Капитальные работы",
+	    "Компьютерная техника",
+	    "Проектные работы" };
+
     public static Object[] registr_items = {
 	    new ComboItemRegistr(true, "Зарегистрирована"),
 	    new ComboItemRegistr(false, "Не зарегистрирована") };
@@ -105,7 +137,7 @@ public class Zakon223_FZ extends JFrame {
 	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 	/**
-	 * Проверка наличие базы данных
+	 * Проверка наличие таблиц базы данных
 	 */
 	Class.forName("org.sqlite.JDBC");
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
@@ -114,20 +146,29 @@ public class Zakon223_FZ extends JFrame {
 	Statement stat = conn.createStatement();
 
 	stat.executeUpdate("CREATE TABLE IF NOT EXISTS organization(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, inn STRING, name STRING, regist STRING, polojen_ooc STRING);");
+
 	stat.executeUpdate("CREATE TABLE IF NOT EXISTS types_of_org(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, type_of_org_id INTEGER, organization_id INTEGER);");
 	stat.executeUpdate("CREATE TABLE IF NOT EXISTS type_of_org(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
 
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS purchase(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, organization_id INTEGER, subject_id INTEGER, aspect_id INTEGER, type_id INTEGER, date STRING, number STRING, subject_title STRING, status INTEGER, count_all INTERGER, count_do INTGER, torgi_start_cost STRING, torgi_finish_cost STRING);");
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS day_d(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, organization_id INTEGER, month STRING, year STRING, count_dogovors INTEGER, summa STRING);");
+
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS subject(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS type(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS aspect(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
+
 	/**
 	 * Если базы данных нет => заполняются таблицы константы!
+	 */
+
+	/**
+	 * Принадлежность к видам юридическиз лиц, определенных в ч. 2 статьи 1
+	 * Закона 223-ФЗ
 	 */
 	ResultSet test_type_of_org = stat
 		.executeQuery("SELECT * FROM type_of_org");
 
 	if (!test_type_of_org.next()) {
-	    /**
-	     * Принадлежность к видам юридическиз лиц, определенных в ч. 2
-	     * статьи 1 Закона 223-ФЗ
-	     */
 	    PreparedStatement pst = conn
 		    .prepareStatement("INSERT INTO type_of_org VALUES (?, ?);");
 
@@ -141,8 +182,63 @@ public class Zakon223_FZ extends JFrame {
 
 	test_type_of_org.close();
 
-	// stat.executeUpdate("CREATE TABLE IF NOT EXISTS title(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, presenceid INTEGER, year STRING, month STRING);");
-	// stat.executeUpdate("CREATE TABLE IF NOT EXISTS otpusk(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, titleid INTEGER, code STRING, vall STRING, vpribor STRING, vraschet STRING, sall STRING, spribor STRING, sraschet STRING);");
+	/**
+	 * Способы размещения заказа
+	 */
+	ResultSet test_aspect = stat.executeQuery("SELECT * FROM aspect");
+
+	if (!test_aspect.next()) {
+	    PreparedStatement pst = conn
+		    .prepareStatement("INSERT INTO aspect VALUES (?, ?);");
+
+	    for (String title : aspect_title) {
+		pst.setString(2, title);
+		pst.addBatch();
+	    }
+	    pst.executeBatch();
+	    pst.close();
+	}
+
+	test_aspect.close();
+
+	/**
+	 * Классификация закупки
+	 */
+	ResultSet test_type = stat.executeQuery("SELECT * FROM type");
+
+	if (!test_type.next()) {
+	    PreparedStatement pst = conn
+		    .prepareStatement("INSERT INTO type VALUES (?, ?);");
+
+	    for (String title : type_title) {
+		pst.setString(2, title);
+		pst.addBatch();
+	    }
+	    pst.executeBatch();
+	    pst.close();
+	}
+
+	test_type.close();
+
+	/**
+	 * Предмет закупки
+	 */
+	ResultSet test_subject = stat.executeQuery("SELECT * FROM subject");
+
+	if (!test_subject.next()) {
+	    PreparedStatement pst = conn
+		    .prepareStatement("INSERT INTO subject VALUES (?, ?);");
+
+	    for (String title : subject_title) {
+		pst.setString(2, title);
+		pst.addBatch();
+	    }
+	    pst.executeBatch();
+	    pst.close();
+	}
+
+	test_subject.close();
+
 	stat.close();
 	conn.close();
 

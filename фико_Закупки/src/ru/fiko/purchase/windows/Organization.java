@@ -4,29 +4,17 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import javax.swing.JTabbedPane;
 
-import ru.fiko.purchase.main.Zakon223_FZ;
-import ru.fiko.purchase.supports.CheckListItem;
-import ru.fiko.purchase.supports.CheckListRenderer;
+import ru.fiko.purchase.main.Purchases223FZ;
+import ru.fiko.purchase.windows.organization.Info;
+import ru.fiko.purchase.windows.organization.Purchases;
 
 public class Organization extends JPanel {
 
@@ -35,228 +23,179 @@ public class Organization extends JPanel {
      */
     private static final long serialVersionUID = 4404715103010867587L;
 
-    private Zakon223_FZ purchase;
-    private int id;
-
-    private JPanel profile;
-    private JPanel profile_hidden;
-
-    private Vector<CheckListItem> checklist;
+    /**
+     * Указатель на родителя.<br>
+     * Используется для смены компонентов окна.
+     */
+    private Purchases223FZ zakon223_FZ;
 
     /**
+     * ID организация в базе данных
+     */
+    private int id;
+
+    /**
+     * Панель с данными организации
+     */
+    private Info info;
+
+    /**
+     * Панель с таблицей закупок и подробными данными о закупке.
+     */
+    private Purchases purchase;
+
+    /**
+     * Формирует панель с всеми данными о организации.
+     * 
      * @param parent
+     *            - Указатель на родителя. Используется для смены компонентов
+     *            окна.
      * @param id
+     *            - id организации
      * @throws ClassNotFoundException
      * @throws SQLException
      */
-    public Organization(Zakon223_FZ parent, int id)
-	    throws ClassNotFoundException, SQLException {
+    public Organization(Purchases223FZ parent, int id) throws SQLException {
 
-	Class.forName("org.sqlite.JDBC");
-
-	this.purchase = parent;
+	this.zakon223_FZ = parent;
 	this.id = id;
 
 	/**
-	 * Получение данных о организации
+	 * Сборка панели с даннымми организации и панели фильтрации закупок
 	 */
-	String inn = "";
-	String name = "";
-	String regist = "";
-	String polojen_ooc = "";
+	JPanel top = new JPanel(new BorderLayout());
+	top.add(this.info = new Info(this), BorderLayout.NORTH);
 
-	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Zakon223_FZ.PATHTODB);
+	/**
+	 * Настройки панели организации
+	 */
+	this.setLayout(new BorderLayout(5, 5));
+	this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-	Statement stat = conn.createStatement();
-	ResultSet rs_org = stat
-		.executeQuery("SELECT * FROM organization WHERE id LIKE '"
-			+ this.id + "'");
+	this.add(top, BorderLayout.NORTH);
+	this.add(data_panel(), BorderLayout.CENTER);
+	this.add(foot_btns(), BorderLayout.SOUTH);
 
-	if (rs_org.next()) {
-	    inn = rs_org.getString("inn");
-	    name = rs_org.getString("name");
-	    regist = rs_org.getString("regist");
-	    polojen_ooc = rs_org.getString("polojen_ooc");
-	} else {
-	    // TODO кнопка "вернуться назад"
+    }
+
+    /**
+     * Возвращает id Организации, которая открыта в данной панели
+     * 
+     * @return id организации
+     */
+    public int getId() {
+	return id;
+    }
+
+    /**
+     * Возвращение к панели поиска организации
+     */
+    public void backToSearchOrg() {
+	try {
+	    zakon223_FZ.setPanelSearchOrg();
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+    }
 
-	rs_org.close();
-
+    /**
+     * Формирование панели с управляющими кнопками.
+     * 
+     * @return панель с управляющими кнопкамии
+     */
+    private JPanel foot_btns() {
 	/**
-	 * Профиль организации
+	 * Управляющие кнопки
 	 */
 
-	/**
-	 * Строка для ввода наименования организации
-	 */
-	JTextField c_name = new JTextField(name);
+	JButton btn_update = new JButton("Обновить данные");
+	btn_update.addActionListener(new ActionListener() {
 
-	/**
-	 * Кнопка раскрытия/скрытие дополнительных данных
-	 */
-	JButton btn = new JButton("  +  ");
-	btn.setToolTipText("Дополнительные данные");
-	btn.addActionListener(new ActionListener() {
+	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		JButton btn = (JButton) arg0.getSource();
-
-		if (btn.getText().equals("  +  ")) {
-		    profile.add(profile_hidden);
-		    btn.setText("  -  ");
-		} else {
-		    profile.remove(profile_hidden);
-		    btn.setText("  +  ");
+		try {
+		    info.save_Org_Info();
+		} catch (SQLException e) {
+		    e.printStackTrace();
 		}
 	    }
 	});
 
-	/**
-	 * Основные компоненты организации
-	 */
-	JPanel profile_main = new JPanel(new BorderLayout());
-	profile_main.add(c_name, BorderLayout.CENTER);
-	profile_main.add(btn, BorderLayout.EAST);
+	JButton btn_prev2 = new JButton("Добавить закупку");
+	btn_prev2.addActionListener(new ActionListener() {
 
-	/**
-	 * Скрытые данные организации.<br>
-	 * Скрыты, т.к. занимают внушительное пространство окна.
-	 */
-
-	/**
-	 * Строка с ИНН
-	 */
-	JTextField c_inn = new JTextField(inn);
-
-	JPanel profile_hidden_inn = new JPanel(new BorderLayout());
-	profile_hidden_inn.add(new JLabel("ИНН:"), BorderLayout.WEST);
-	profile_hidden_inn.add(c_inn, BorderLayout.CENTER);
-
-	/**
-	 * Регистрация организации
-	 */
-
-	JComboBox reg_box = new JComboBox(Zakon223_FZ.registr_items);
-	if (regist.equals("true"))
-	    reg_box.setSelectedItem(Zakon223_FZ.registr_items[0]);
-	else
-	    reg_box.setSelectedItem(Zakon223_FZ.registr_items[1]);
-
-	JPanel profile_hidden_regist = new JPanel(new BorderLayout());
-	profile_hidden_regist.add(reg_box, BorderLayout.EAST);
-
-	/**
-	 * Вид деятельности
-	 */
-
-	/**
-	 * Формирование списка
-	 */
-	checklist = new Vector<CheckListItem>();
-	ResultSet rs_type_of_org = stat
-		.executeQuery("SELECT id, title FROM type_of_org");
-
-	while (rs_type_of_org.next())
-	    checklist.add(new CheckListItem(rs_type_of_org.getString("title"),
-		    rs_type_of_org.getInt("id")));
-
-	rs_type_of_org.close();
-
-	/**
-	 * Установка значеней видов деятельности организации
-	 */
-	ResultSet rs_types_of_org = stat
-		.executeQuery("SELECT type_of_org_id FROM types_of_org WHERE organization_id LIKE '"
-			+ this.id + "'");
-
-	while (rs_types_of_org.next())
-	    for (CheckListItem item : checklist)
-		if (item.getValue() == rs_types_of_org.getInt("type_of_org_id"))
-		    item.setSelected(true);
-
-	rs_types_of_org.close();
-
-	/**
-	 * Настройки компонента:<br>
-	 * - 5 строк<br>
-	 * - измененное повидение ячеек + иверсия значений при клике
-	 */
-	JList list_type_of_org = new JList(checklist);
-
-	list_type_of_org.setCellRenderer(new CheckListRenderer());
-	list_type_of_org.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	list_type_of_org.setVisibleRowCount(5);
-	/**
-	 * Инверсия значения выбранного элемента
-	 */
-	list_type_of_org.addMouseListener(new MouseAdapter() {
-	    public void mouseClicked(MouseEvent event) {
-		JList list = (JList) event.getSource();
-
-		int index = list.locationToIndex(event.getPoint());
-		CheckListItem item = (CheckListItem) list.getModel()
-			.getElementAt(index);
-		item.setSelected(!item.isSelected());
-		list.repaint(list.getCellBounds(index, index));
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		try {
+		    purchase.newPurchase();
+		} catch (SQLException e) {
+		    e.printStackTrace();
+		}
 	    }
 	});
-
-	/**
-	 * Положения о закупках на ООС
-	 */
-
-	JTextField area = new JTextField(polojen_ooc);
-
-	/**
-	 * Сборка панели с ИНН и регистрацией
-	 */
-	JPanel profile_hidden_inn_regist = new JPanel(new GridLayout(1, 2));
-	profile_hidden_inn_regist.add(profile_hidden_inn);
-	profile_hidden_inn_regist.add(profile_hidden_regist);
-
-	profile_hidden = new JPanel(new BorderLayout(5,5));
-	profile_hidden.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-	profile_hidden.add(profile_hidden_inn_regist, BorderLayout.NORTH);
-	profile_hidden.add(new JScrollPane(list_type_of_org),
-		BorderLayout.CENTER);
-	profile_hidden.add(area, BorderLayout.SOUTH);
-
-	profile = new JPanel(new BorderLayout());
-	profile.add(profile_main, BorderLayout.NORTH);
-
-	/**
-	 * Управляющие кнопки
-	 */
 
 	JButton btn_prev = new JButton("Назад");
 	btn_prev.addActionListener(new ActionListener() {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		try {
-		    purchase.setPanelSearchOrg();
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
+		backToSearchOrg();
 	    }
 	});
 
+	/**
+	 * Сборка управляющих кнопок
+	 */
+	JPanel foot_btns = new JPanel(new GridLayout(1, 3, 5, 5));
+	// foot_btns.add(btn_update);
+	foot_btns.add(btn_prev2);
+	foot_btns.add(btn_prev);
+
 	JPanel foot = new JPanel(new BorderLayout());
-	foot.add(btn_prev);
+	foot.add(foot_btns, BorderLayout.EAST);
 
-	this.setLayout(new BorderLayout());
-	this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-	this.add(profile, BorderLayout.NORTH);
-	this.add(foot, BorderLayout.SOUTH);
-
-	stat.close();
-	conn.close();
+	return foot;
     }
 
-    public int getId() {
-	return id;
+    /**
+     * Формирование панели с данными организации о закупках и отчетности
+     * 
+     * @return data_panel - панель с двумя вкладками "закупки" и "отчетность"
+     * @throws SQLException
+     */
+    private JPanel data_panel() throws SQLException {
+
+	JTabbedPane tabbed = new JTabbedPane();
+	tabbed.add("Закупки", this.purchase = new Purchases(this));
+	tabbed.add("Отчет", new JLabel("sdfsdf"));
+
+	JPanel data_panel = new JPanel(new BorderLayout());
+	data_panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+	data_panel.add(tabbed);
+
+	return data_panel;
     }
 
+    public Purchases223FZ getZakon223_FZ() {
+	return zakon223_FZ;
+    }
+
+    /**
+     * Возвращает панель с данными организации
+     * 
+     * @return info - панель с данными организации
+     */
+    public Info getInfo() {
+	return info;
+    }
+
+    /**
+     * Возвращает панель с таблицей закупок и подробными данными о закупке.
+     * 
+     * @return purchase - панель с таблицей закупок и подробными данными о
+     *         закупке.
+     */
+    public Purchases getPurchase() {
+	return purchase;
+    }
 }

@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,6 +25,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -33,10 +35,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-import ru.fiko.purchase.main.Zakon223_FZ;
+import ru.fiko.purchase.main.Purchases223FZ;
 import ru.fiko.purchase.supports.CheckListItem;
 import ru.fiko.purchase.supports.CheckListRenderer;
-import ru.fiko.purchase.supports.ComboItemRegistr;
+import ru.fiko.purchase.supports.ComboItemBooleanValue;
 
 public class SearchOrg extends JPanel {
 
@@ -69,11 +71,6 @@ public class SearchOrg extends JPanel {
     private JComboBox reg_box;
 
     /**
-     * Панель с компонентами, по которым производится фильтрация организаций
-     */
-    private JPanel filter;
-
-    /**
      * Панель "Расширенного поиска"
      */
     private JPanel filter_type_registr;
@@ -82,19 +79,26 @@ public class SearchOrg extends JPanel {
      * Таблица с отфильтрованным списком организаций
      */
     private JTable org_table;
-    
-    private Zakon223_FZ purchase;
+
+    /**
+     * Указатель на родителя.<br>
+     * Используется для смены компонентов окна.
+     */
+    private Purchases223FZ purchase;
 
     /**
      * Конструктор. Инициализация структуры панели поиска организации.
-     * @param parent 
+     * 
+     * @param parent
+     *            - класс, создавший данную панель
      * 
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public SearchOrg(Zakon223_FZ purchase) throws SQLException, ClassNotFoundException {
-	this.purchase =  purchase;
-	
+    public SearchOrg(Purchases223FZ purchase) throws SQLException,
+	    ClassNotFoundException {
+	this.purchase = purchase;
+
 	Class.forName("org.sqlite.JDBC");
 
 	/**
@@ -105,6 +109,8 @@ public class SearchOrg extends JPanel {
 	 * Строка для ввода ИНН или наименования организации
 	 */
 	jSearchTextField = new JTextField();
+	jSearchTextField
+		.setToolTipText("Поиск по ИНН и наимаенованию организации");
 	jSearchTextField.addKeyListener(new KeyListener() {
 
 	    @Override
@@ -144,18 +150,19 @@ public class SearchOrg extends JPanel {
 	    public void actionPerformed(ActionEvent arg0) {
 		JButton btn = (JButton) arg0.getSource();
 
-		if (btn.getText().equals("  +  ")) {
-		    filter.add(filter_type_registr);
-		    btn.setText("  -  ");
-		} else {
-		    filter.remove(filter_type_registr);
+		if (filter_type_registr.isVisible()) {
+		    filter_type_registr.setVisible(false);
 		    btn.setText("  +  ");
+		} else {
+		    filter_type_registr.setVisible(true);
+		    btn.setText("  -  ");
 		}
 	    }
 	});
 
 	JPanel filter_orgainzation = new JPanel(new BorderLayout());
-//	filter_orgainzation.add(new JLabel("Организация: "), BorderLayout.WEST);
+	// filter_orgainzation.add(new JLabel("Организация: "),
+	// BorderLayout.WEST);
 	filter_orgainzation.add(jSearchTextField, BorderLayout.CENTER);
 	filter_orgainzation.add(btn, BorderLayout.EAST);
 
@@ -169,13 +176,12 @@ public class SearchOrg extends JPanel {
 
 	checklist = new Vector<CheckListItem>();
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Zakon223_FZ.PATHTODB);
+		+ Purchases223FZ.PATHTODB);
 
 	Statement stat = conn.createStatement();
 	ResultSet rs_type_of_org = stat
 		.executeQuery("SELECT id, title FROM type_of_org");
 
-	// TODO изменить название класса CheckListItem
 	while (rs_type_of_org.next())
 	    checklist.add(new CheckListItem(rs_type_of_org.getString("title"),
 		    rs_type_of_org.getInt("id")));
@@ -226,7 +232,8 @@ public class SearchOrg extends JPanel {
 	    }
 	});
 
-	reg_box = new JComboBox(Zakon223_FZ.registr_items);
+	reg_box = new JComboBox(Purchases223FZ.registr_items);
+	reg_box.setToolTipText("Регистрация на ООС");
 	/**
 	 * Выставляет флаг фильтра по организации в true.<br>
 	 * Сделанно для того, чтобы пользователю не нужно было совершать
@@ -274,6 +281,7 @@ public class SearchOrg extends JPanel {
 	 * Фильтр. Список "Вид деятельности" с регистрацией организации
 	 */
 	filter_type_registr = new JPanel(new BorderLayout(5, 5));
+	filter_type_registr.setVisible(false);
 	filter_type_registr.add(filter_registr, BorderLayout.NORTH);
 	filter_type_registr.add(new JScrollPane(list_type_of_org),
 		BorderLayout.CENTER);
@@ -282,8 +290,9 @@ public class SearchOrg extends JPanel {
 	 * Фильтр. Наименование орагинизации + Расриненый поиск(на начальном
 	 * этапе скрыт)
 	 */
-	filter = new JPanel((new BorderLayout()));
+	JPanel filter = new JPanel((new BorderLayout()));
 	filter.add(filter_orgainzation, BorderLayout.NORTH);
+	filter.add(filter_type_registr, BorderLayout.CENTER);
 
 	/**
 	 * Часть 2. Показ организаций.
@@ -304,7 +313,7 @@ public class SearchOrg extends JPanel {
 	    }
 	};
 	org_table.addMouseListener(new MouseAdapter() {
-	    
+
 	    /**
 	     * Двойной клик мыши по строке. Открытие организации
 	     */
@@ -326,7 +335,7 @@ public class SearchOrg extends JPanel {
 	     * Реализации PopUp окна.
 	     */
 	    public void mouseReleased(MouseEvent e) {
-
+		// TODO доделать PopUp
 		final JTable target = (JTable) e.getSource();
 
 		if (0 < target.getSelectedRows().length && e.isMetaDown()) {
@@ -341,11 +350,83 @@ public class SearchOrg extends JPanel {
 			}
 		    });
 
+		    /**
+		     * Удаление выделенных организаций
+		     */
+		    JMenuItem del = new JMenuItem("Удалить");
+		    del.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+			    /**
+			     * Защита от случайного нажатия
+			     */
+			    int quest = JOptionPane
+				    .showConfirmDialog(
+					    null,
+					    "Вы уверены, что хотите удалить организацию?",
+					    "Вопрос", JOptionPane.YES_NO_OPTION);
+
+			    if (quest != JOptionPane.YES_OPTION)
+				return;
+
+			    /**
+			     * Выбран пункт удалить
+			     */
+
+			    for (int index : target.getSelectedRows()) {
+
+				/**
+				 * id удаляемой организации
+				 */
+				int id = Integer.parseInt(target.getValueAt(
+					index, 0).toString());
+				try {
+
+				    /**
+				     * Удаляем не только организацию, но и
+				     * связанные с ней записи
+				     */
+				    Connection conn = DriverManager
+					    .getConnection("jdbc:sqlite:"
+						    + Purchases223FZ.PATHTODB);
+				    Statement stat = conn.createStatement();
+
+				    stat.executeUpdate("DELETE FROM organization WHERE id = '"
+					    + id + "';");
+
+				    stat.executeUpdate("DELETE FROM purchase WHERE organization_id = '"
+					    + id + "';");
+
+				    stat.executeUpdate("DELETE FROM types_of_org WHERE organization_id = '"
+					    + id + "';");
+
+				    stat.executeUpdate("DELETE FROM day_d WHERE organization_id = '"
+					    + id + "';");
+
+				    stat.close();
+				    conn.close();
+				} catch (Exception e) {
+				    e.printStackTrace();
+				}
+			    }
+
+			    try {
+				updateTable();
+			    } catch (SQLException e) {
+				e.printStackTrace();
+			    }
+			}
+		    });
+
 		    JPopupMenu popup = new JPopupMenu();
 
-		    if (target.getSelectedRows().length == 1)
+		    if (target.getSelectedRows().length == 1) {
 			popup.add(open);
+		    }
 
+		    popup.add(del);
 		    popup.show(e.getComponent(), e.getX(), e.getY());
 		}
 	    }
@@ -356,25 +437,92 @@ public class SearchOrg extends JPanel {
 	JPanel grid = new JPanel(new BorderLayout());
 	grid.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 	grid.add(new JScrollPane(org_table), BorderLayout.CENTER);
-	
+
 	/**
 	 * Часть 3. Системный кнопки
 	 */
-	
-	
+
+	/**
+	 * Добавление новой организации.<br>
+	 * Создаётся пустая организация.
+	 */
 	JButton btn_add_org = new JButton("Добавить организацию");
 	btn_add_org.addActionListener(new ActionListener() {
-	    
+
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		//TODO дописать код добавления организации + переход
-		
-		int id_new_org = 0;
-		openOrg(id_new_org);
+
+		String new_title = JOptionPane
+			.showInputDialog("Введите наименование новой организации: ");
+
+		if (new_title != null)
+		    new_title = new_title.trim();
+		else
+		    new_title = "";
+
+		if (new_title.length() > 0) {
+
+		    try {
+			Connection conn = DriverManager
+				.getConnection("jdbc:sqlite:"
+					+ Purchases223FZ.PATHTODB);
+
+			PreparedStatement pst = conn
+				.prepareStatement("INSERT INTO organization VALUES (?, ?, ?, ?, ?, ?);");
+
+			// ИНН
+			pst.setString(2, "");
+			// Наименование организации
+			pst.setString(3, new_title);
+			// Наименование организации для поиска
+			pst.setString(4, "");
+			// Регистрация
+			pst.setString(5, "false");
+			// Положение ООС
+			pst.setString(6, "");
+
+			pst.addBatch();
+
+			pst.executeBatch();
+			pst.close();
+
+			Statement stat = conn.createStatement();
+
+			/**
+			 * Получение id новой организации
+			 */
+			int id_new_org = 0;
+
+			ResultSet get_new_id = stat
+				.executeQuery("SELECT last_insert_rowid();");
+			
+			if (get_new_id.next())
+			    id_new_org = get_new_id.getInt(1);
+			
+			get_new_id.close();
+			conn.close();
+
+			/**
+			 * Переход к редактированию данных новой организации
+			 */
+			openOrg(id_new_org);
+			SearchOrg.this.purchase.invertAdditonBtnOrganization();
+
+			/**
+			 * Обновление таблицы необходимо, т.к. сам класс
+			 * SearchOrg не уничтожается, а скрывается!
+			 */
+			updateTable();
+
+		    } catch (Exception e) {
+			e.printStackTrace();
+		    }
+
+		}
 	    }
 	});
 
-	JPanel buttons = new JPanel(new GridLayout(1,1));
+	JPanel buttons = new JPanel(new GridLayout(1, 1));
 	buttons.add(btn_add_org);
 
 	this.setLayout(new BorderLayout());
@@ -397,10 +545,10 @@ public class SearchOrg extends JPanel {
      * 
      * @throws SQLException
      */
-    private void updateTable() throws SQLException {
+    public void updateTable() throws SQLException {
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Zakon223_FZ.PATHTODB);
+		+ Purchases223FZ.PATHTODB);
 
 	/**
 	 * Хранит данные, для внесения в таблицу
@@ -427,7 +575,7 @@ public class SearchOrg extends JPanel {
 		    sqlsearch += " AND ";
 
 		sqlsearch += "(inn LIKE '%" + result[i].toLowerCase()
-			+ "%' OR name LIKE '%" + result[i].toLowerCase()
+			+ "%' OR name_low LIKE '%" + result[i].toLowerCase()
 			+ "%')";
 	    }
 	}
@@ -444,7 +592,7 @@ public class SearchOrg extends JPanel {
 		boolean current_value_org = Boolean.parseBoolean(rs_org
 			.getString(("regist")));
 
-		ComboItemRegistr search_value = (ComboItemRegistr) reg_box
+		ComboItemBooleanValue search_value = (ComboItemBooleanValue) reg_box
 			.getSelectedItem();
 
 		if (search_value.getValue() != current_value_org)
@@ -509,17 +657,21 @@ public class SearchOrg extends JPanel {
 	/**
 	 * Настройка ширины колонки с ИНН
 	 */
-	colModel.getColumn(1).setMaxWidth(300);
-	colModel.getColumn(1).setMinWidth(150);
+	colModel.getColumn(1).setMaxWidth(250);
+	colModel.getColumn(1).setMinWidth(90);
 
     }
 
+    /**
+     * Переход к просмотру анкеты организации.
+     * 
+     * @param id
+     *            - id организации
+     */
     private void openOrg(int id) {
 	try {
 	    this.purchase.setPanelOrganization(id);
-	} catch (ClassNotFoundException e) {
-	    e.printStackTrace();
-	} catch (SQLException e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
     }

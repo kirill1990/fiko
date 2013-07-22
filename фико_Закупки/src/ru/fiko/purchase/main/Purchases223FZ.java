@@ -3,7 +3,6 @@
  */
 package ru.fiko.purchase.main;
 
-import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
@@ -17,14 +16,15 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import ru.fiko.purchase.supports.ComboItemRegistr;
+import ru.fiko.purchase.supports.ComboItemBooleanValue;
+import ru.fiko.purchase.supports.ComboItemIntValue;
 import ru.fiko.purchase.windows.Organization;
 import ru.fiko.purchase.windows.SearchOrg;
 
-public class Zakon223_FZ extends JFrame {
+public class Purchases223FZ extends JFrame {
 
     /**
-     * 
+     * serialVersionUID
      */
     private static final long serialVersionUID = -7171130112096858890L;
 
@@ -67,6 +67,7 @@ public class Zakon223_FZ extends JFrame {
      * !!! Предупреждение: используется только при создание бд!
      */
     private static String[] aspect_title = {
+	    "",
 	    "Закупка у единственного поставщика (исполнителя, подрядчика)",
 	    "Запрос котировок",
 	    "Запрос предложений",
@@ -80,7 +81,7 @@ public class Zakon223_FZ extends JFrame {
      * <br>
      * !!! Предупреждение: используется только при создание бд!
      */
-    private static String[] type_title = { "Товары", "Услуги", "Работа", };
+    private static String[] type_title = { "", "Товары", "Услуги", "Работа", };
 
     /**
      * Предмет закупки<br>
@@ -88,31 +89,52 @@ public class Zakon223_FZ extends JFrame {
      * !!! Предупреждение: используется только при создание бд!
      */
     private static String[] subject_title = {
+	    "",
 	    "Медоборудование",
 	    "Капитальные работы",
 	    "Компьютерная техника",
-	    "Проектные работы" };
+	    "Проектные работы",
+	    "Продукт питания"};
 
+    /**
+     * Список возможных статусов регистриации организации
+     */
     public static Object[] registr_items = {
-	    new ComboItemRegistr(true, "Зарегистрирована"),
-	    new ComboItemRegistr(false, "Не зарегистрирована") };
+	    new ComboItemBooleanValue(true, "Зарегистрирована"),
+	    new ComboItemBooleanValue(false, "Не зарегистрирована") };
 
-    public Zakon223_FZ() throws SQLException, ClassNotFoundException {
+    /**
+     * Список возможных статусов закупки
+     */
+    public static Object[] status_items = {
+	    new ComboItemIntValue(0, "Состоялся"),
+	    new ComboItemIntValue(1, "1 участник"),
+	    new ComboItemIntValue(2, "Нет заявок") };
+
+    /**
+     * Список возможных статусов договора
+     */
+    public static Object[] dogovor_items = {
+	    new ComboItemBooleanValue(true, "Заключен"),
+	    new ComboItemBooleanValue(false, "Не заключен") };
+
+    public Purchases223FZ() throws SQLException, ClassNotFoundException {
 	/*
 	 * Инициализация параметров окна
 	 */
 	this.setSize(WIDTH, HEIGHT);
 
 	// всегда по центру экрана
-	this.setLocation(
-		(Toolkit.getDefaultToolkit().getScreenSize().width - WIDTH) / 2,
-		(Toolkit.getDefaultToolkit().getScreenSize().height - HEIGHT) / 2);
-	this.setTitle("Тест");
+	// this.setLocation(
+	// (Toolkit.getDefaultToolkit().getScreenSize().width - WIDTH) / 2,
+	// (Toolkit.getDefaultToolkit().getScreenSize().height - HEIGHT) / 2);
+	this.setLocation(150, 100);
+	this.setTitle("Закупки - 223 ФЗ");
 	// this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	this.setVisible(true);
 
 	/*
-	 * Уничтожение процесса после закрытия окна
+	 * ssssss Уничтожение процесса после закрытия окна
 	 */
 	this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	this.addWindowListener(new WindowAdapter() {
@@ -141,20 +163,55 @@ public class Zakon223_FZ extends JFrame {
 	 */
 	Class.forName("org.sqlite.JDBC");
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Zakon223_FZ.PATHTODB);
+		+ Purchases223FZ.PATHTODB);
 
 	Statement stat = conn.createStatement();
 
-	stat.executeUpdate("CREATE TABLE IF NOT EXISTS organization(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, inn STRING, name STRING, regist STRING, polojen_ooc STRING);");
+	/**
+	 * Организация
+	 */
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS organization(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		+ "inn STRING, name STRING, name_low STRING, regist STRING, polojen_ooc STRING);");
 
-	stat.executeUpdate("CREATE TABLE IF NOT EXISTS types_of_org(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, type_of_org_id INTEGER, organization_id INTEGER);");
-	stat.executeUpdate("CREATE TABLE IF NOT EXISTS type_of_org(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
+	/**
+	 * Список видов деятельности организации
+	 */
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS types_of_org(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		+ "type_of_org_id INTEGER, organization_id INTEGER);");
 
-	stat.executeUpdate("CREATE TABLE IF NOT EXISTS purchase(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, organization_id INTEGER, subject_id INTEGER, aspect_id INTEGER, type_id INTEGER, date STRING, number STRING, subject_title STRING, status INTEGER, count_all INTERGER, count_do INTGER, torgi_start_cost STRING, torgi_finish_cost STRING);");
-	stat.executeUpdate("CREATE TABLE IF NOT EXISTS day_d(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, organization_id INTEGER, month STRING, year STRING, count_dogovors INTEGER, summa STRING);");
+	/**
+	 * Вид деятельности организации
+	 */
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS type_of_org(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		+ "title STRING);");
 
+	/**
+	 * Закупки
+	 */
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS purchase(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		+ "organization_id INTEGER, subject_id INTEGER, aspect_id INTEGER, type_id INTEGER, "
+		+ "date STRING, number STRING, subject_title STRING, subject_title_low STRING, status INTEGER, "
+		+ "count_all INTERGER, count_do INTGER, torgi_start_cost STRING, torgi_finish_cost STRING, dogovor STRING);");
+
+	/**
+	 * Отчет
+	 */
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS day_d(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		+ "organization_id INTEGER, month STRING, year STRING, count_dogovors INTEGER, summa STRING);");
+
+	/**
+	 * Предмет закупки
+	 */
 	stat.executeUpdate("CREATE TABLE IF NOT EXISTS subject(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
+
+	/**
+	 * Классификация закуки
+	 */
 	stat.executeUpdate("CREATE TABLE IF NOT EXISTS type(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
+
+	/**
+	 * Способ размещения заказа
+	 */
 	stat.executeUpdate("CREATE TABLE IF NOT EXISTS aspect(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
 
 	/**
@@ -242,33 +299,44 @@ public class Zakon223_FZ extends JFrame {
 	stat.close();
 	conn.close();
 
-	new Zakon223_FZ();
+	new Purchases223FZ();
     }
 
     public void setPanelSearchOrg() throws SQLException, ClassNotFoundException {
 	this.getContentPane().removeAll();
 
-	if (searchOrg != null)
-	    this.getContentPane().add(searchOrg);
-	else
-	    this.getContentPane().add(searchOrg = new SearchOrg(this));
+	if (searchOrg == null)
+	    searchOrg = new SearchOrg(this);
 
+	this.getContentPane().add(searchOrg);
 	this.validate();
 	this.repaint();
+    }
+
+    public void updateSearchOrgTable() throws SQLException {
+	if (searchOrg != null)
+	    searchOrg.updateTable();
     }
 
     public void setPanelOrganization(int id) throws ClassNotFoundException,
 	    SQLException {
 	this.getContentPane().removeAll();
 
-	if (organization != null && organization.getId() == id)
-	    this.getContentPane().add(organization);
-	else
-	    this.getContentPane()
-		    .add(organization = new Organization(this, id));
+	// if (organization == null || organization.getId() != id)
+	organization = new Organization(this, id);
 
+	this.getContentPane().add(organization);
 	this.validate();
 	this.repaint();
+    }
+
+    /**
+     * Действие на панели "Организация". Открытие/Скрытие панели с
+     * дополнительной информацией о организации.
+     */
+    public void invertAdditonBtnOrganization() {
+	if (organization != null)
+	    organization.getInfo().ivertAdditionBtn();
     }
 
     public void setPanelPurchase() {

@@ -1,15 +1,15 @@
 package ru.fiko.purchase.supports;
 
-public class ComboItemRegistr {
-    private boolean value;
+public class ComboItemIntValue {
+    private int value;
     private String label;
 
-    public ComboItemRegistr(boolean value, String label) {
+    public ComboItemIntValue(int value, String label) {
 	this.value = value;
 	this.label = label;
     }
 
-    public boolean getValue() {
+    public int getValue() {
 	return this.value;
     }
 

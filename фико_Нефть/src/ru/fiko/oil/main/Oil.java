@@ -1,6 +1,9 @@
 package ru.fiko.oil.main;
 
+import java.awt.BorderLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -10,12 +13,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,9 +27,7 @@ import javax.xml.transform.TransformerException;
 
 import jxl.write.WriteException;
 
-import ru.fiko.oil.data.OutputStations;
 import ru.fiko.oil.panels.Citys;
-import ru.fiko.oil.panels.Districts;
 import ru.fiko.oil.panels.Main;
 import ru.fiko.oil.panels.Monitoring;
 import ru.fiko.oil.panels.Optov;
@@ -45,6 +47,9 @@ public class Oil extends JFrame {
 
     private static int WIDTH = 1100;
     private static int HEIGHT = 450;
+
+    private JPanel tool = new JPanel(new BorderLayout(5, 5));
+    private JPanel data = new JPanel(new BorderLayout(5, 5));
 
     private static Connection conn = null;
     private static Statement stat = null;
@@ -84,18 +89,111 @@ public class Oil extends JFrame {
 	 * Заполнение формы
 	 */
 
-	JTabbedPane jtp = new JTabbedPane();
-	getContentPane().add(jtp);
-	// jtp.setTabPlacement(JTabbedPane.LEFT);
+	JToolBar toolBar = new JToolBar("Управляющие кнопки");
+	tool.add(toolBar, BorderLayout.WEST);
 
-	jtp.add("Мониторинг", new Monitoring());
-	jtp.add("Оптовые", new Optov());
-	jtp.add("Поставщики", new Stations());
-	jtp.add("Базовые настройки", new Main());
-	// jtp.add("Главы районов", new Districts());
-	jtp.add("Города", new Citys());
+	JButton btn_monitoring = new JButton("Мониторинг");
+	toolBar.add(btn_monitoring);
+	btn_monitoring.addActionListener(new ActionListener() {
 
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		try {
+		    setDataPanel(new Monitoring());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+	});
+	
+	JButton btn_optov = new JButton("Оптовые");
+	toolBar.add(btn_optov);
+	btn_optov.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		try {
+		    setDataPanel(new Optov());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+	});
+	
+	JButton btn_postav = new JButton("Поставщики");
+	toolBar.add(btn_postav);
+	btn_postav.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		try {
+		    setDataPanel(new Stations());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+	});
+	
+	JButton btn_set = new JButton("Базовые настройки");
+	toolBar.add(btn_set);
+	btn_set.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		try {
+		    setDataPanel(new Main());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+	});
+	
+	
+	JButton btn_gorod = new JButton("Города");
+	toolBar.add(btn_gorod);
+	btn_gorod.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		try {
+		    setDataPanel(new Citys());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+	});
+	
+	
+	
+	//
+	// JTabbedPane jtp = new JTabbedPane();
+	// getContentPane().add(jtp);
+	// // jtp.setTabPlacement(JTabbedPane.LEFT);
+	//
+	// jtp.add("Мониторинг", new Monitoring());
+	// jtp.add("Оптовые", new Optov());
+	// jtp.add("Поставщики", new Stations());
+	// jtp.add("Базовые настройки", new Main());
+	// // jtp.add("Главы районов", new Districts());
+	// jtp.add("Города", new Citys());
+
+	JPanel all_panel = new JPanel(new BorderLayout(5, 5));
+	all_panel.add(tool, BorderLayout.NORTH);
+	all_panel.add(data, BorderLayout.CENTER);
+	getContentPane().add(all_panel);
+
+	setDataPanel(new Monitoring());
+	
 	validate();
+    }
+
+    private void setDataPanel(JPanel panel) {
+	
+	data.removeAll();
+	data.add(panel);
+
+	data.validate();
+	data.repaint();
     }
 
     /**
@@ -193,34 +291,34 @@ public class Oil extends JFrame {
 	stat.close();
 	conn.close();
 	// ConnectionToBD bd = new ConnectionToBD();
-	addTop();
-	
-	
+	// addTop();
+
 	new Oil();
 
 	// new OutputSvod();
 
 	// new OutputData();
 
-//	 try {
-//	
-//	 SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-//	 SimpleDateFormat formatter2 = new SimpleDateFormat("E", Locale.ENGLISH);
-//	
-//	 Date test = formatter.parse(formatter.format(new
-//	 Date(System.currentTimeMillis())));
-//	
-//	 Date plusone = new Date(test.getTime()+86400000);
-//	
-//	 Date date1 = formatter.parse("29.04.2013");
-//	 Date date2 = formatter.parse("20.04.2013");
-//	 //86400000
-//	 //604800000
-//	
-//	 System.out.println(date1.getTime());
-//	 } catch (ParseException e) {
-//	 e.printStackTrace();
-//	 }
+	// try {
+	//
+	// SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+	// SimpleDateFormat formatter2 = new SimpleDateFormat("E",
+	// Locale.ENGLISH);
+	//
+	// Date test = formatter.parse(formatter.format(new
+	// Date(System.currentTimeMillis())));
+	//
+	// Date plusone = new Date(test.getTime()+86400000);
+	//
+	// Date date1 = formatter.parse("29.04.2013");
+	// Date date2 = formatter.parse("20.04.2013");
+	// //86400000
+	// //604800000
+	//
+	// System.out.println(date1.getTime());
+	// } catch (ParseException e) {
+	// e.printStackTrace();
+	// }
 
 	// try
 	// {
@@ -252,6 +350,7 @@ public class Oil extends JFrame {
      * 
      * @throws SQLException
      */
+    @SuppressWarnings("unused")
     private static void addTop() throws SQLException {
 	try {
 	    PreparedStatement pst = DriverManager.getConnection(
@@ -276,7 +375,7 @@ public class Oil extends JFrame {
 	    pst.close();
 	} catch (Exception e) {
 	}
-	
+
 	try {
 	    PreparedStatement pst = DriverManager.getConnection(
 		    "jdbc:sqlite:" + Oil.PATH).prepareStatement(
@@ -300,7 +399,7 @@ public class Oil extends JFrame {
 	    pst.close();
 	} catch (Exception e) {
 	}
-	
+
 	try {
 	    PreparedStatement pst = DriverManager.getConnection(
 		    "jdbc:sqlite:" + Oil.PATH).prepareStatement(
@@ -324,7 +423,7 @@ public class Oil extends JFrame {
 	    pst.close();
 	} catch (Exception e) {
 	}
-	
+
 	try {
 	    PreparedStatement pst = DriverManager.getConnection(
 		    "jdbc:sqlite:" + Oil.PATH).prepareStatement(

@@ -7,10 +7,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,7 +53,7 @@ public class Stations extends JPanel {
     private JComboBox cbComm = null;
 
     // Индексы последних изменений, выпадающих списков
-    private int indexDistrict = 0;
+    private int indexDistrict = 1;
     private int indexComm = 0;
 
     public ItemStation current = null;
@@ -73,6 +75,11 @@ public class Stations extends JPanel {
      * @throws SQLException
      */
     public void ini() throws SQLException {
+	Connection conn = DriverManager
+		.getConnection("jdbc:sqlite:" + Oil.PATH);
+
+	Statement stat = conn.createStatement();
+
 	this.removeAll();
 
 	// настройки по умолчанию
@@ -101,13 +108,13 @@ public class Stations extends JPanel {
 	    // для вывода всех АЗС области
 	    cbDistrict.addItem(new ComboItem("%", "Калужская область"));
 
-	    ResultSet rs = DriverManager
-		    .getConnection("jdbc:sqlite:" + Oil.PATH).createStatement()
-		    .executeQuery("SELECT id,title FROM district;");
+	    ResultSet rs = stat.executeQuery("SELECT id,title FROM district;");
 
 	    while (rs.next())
 		cbDistrict.addItem(new ComboItem(rs.getString(1), rs
 			.getString(2)));
+
+	    rs.close();
 
 	    if (indexDistrict < cbDistrict.getItemCount())
 		cbDistrict.setSelectedIndex(indexDistrict);
@@ -132,12 +139,12 @@ public class Stations extends JPanel {
 	    // для вывода всех АЗС области
 	    cbComm.addItem(new ComboItem("%", "Все АЗС"));
 
-	    ResultSet rs = DriverManager
-		    .getConnection("jdbc:sqlite:" + Oil.PATH).createStatement()
+	    ResultSet rs = stat
 		    .executeQuery("SELECT id,title FROM commercial;");
 
 	    while (rs.next())
 		cbComm.addItem(new ComboItem(rs.getString(1), rs.getString(2)));
+	    rs.close();
 
 	    if (indexComm < cbComm.getItemCount())
 		cbComm.setSelectedIndex(indexComm);
@@ -155,7 +162,7 @@ public class Stations extends JPanel {
 		}
 	    });
 	}
-	
+
 	JButton btn = new JButton("Вывод в xml");
 	btn.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent arg0) {
@@ -166,24 +173,27 @@ public class Stations extends JPanel {
 		}
 	    }
 	});
-	
-	JButton btn2 = new JButton("Вывод списка АЗС");	
+
+	JButton btn2 = new JButton("Вывод списка АЗС");
 	btn2.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent arg0) {
 
 		try {
 		    new OutputStations(new Date(System.currentTimeMillis()));
 		    JOptionPane.showMessageDialog(null, "Готово");
-		}catch (Exception e) {
+		} catch (Exception e) {
 		    e.printStackTrace();
 		}
 	    }
 	});
-	
+
 	JPanel btnpanel = new JPanel();
 	toolsPanel.add(btnpanel, BorderLayout.EAST);
 	btnpanel.add(btn2);
 	btnpanel.add(btn);
+
+	stat.close();
+	conn.close();
 
 	// Формирование информации о АЗС
 	refreshDataPanel();
@@ -239,10 +249,12 @@ public class Stations extends JPanel {
 	    addRecords.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    try {
-			PreparedStatement pst = DriverManager
-				.getConnection("jdbc:sqlite:" + Oil.PATH)
-				.prepareStatement(
-					"INSERT INTO station VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+
+			Connection conn = DriverManager
+				.getConnection("jdbc:sqlite:" + Oil.PATH);
+
+			PreparedStatement pst = conn
+				.prepareStatement("INSERT INTO station VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
 			pst.setInt(2, 0);
 
@@ -259,6 +271,8 @@ public class Stations extends JPanel {
 			pst.addBatch();
 			pst.executeBatch();
 			pst.close();
+
+			conn.close();
 
 			refreshDataPanel();
 		    } catch (SQLException e1) {
@@ -290,8 +304,12 @@ public class Stations extends JPanel {
 	/*
 	 * Получение текста справочной информации
 	 */
-	ResultSet rs = DriverManager.getConnection("jdbc:sqlite:" + Oil.PATH)
-		.createStatement()
+	Connection conn = DriverManager
+		.getConnection("jdbc:sqlite:" + Oil.PATH);
+
+	Statement stat = conn.createStatement();
+
+	ResultSet rs = stat
 		.executeQuery("SELECT text FROM main WHERE id LIKE '1';");
 
 	String text = "";
@@ -309,15 +327,14 @@ public class Stations extends JPanel {
 		null, text);
 
 	if (str != null) {
-	    DriverManager
-		    .getConnection("jdbc:sqlite:" + Oil.PATH)
-		    .createStatement()
-		    .executeUpdate(
-			    "UPDATE main SET text = '" + str
-				    + "' WHERE id LIKE '1';");
+	    stat.executeUpdate("UPDATE main SET text = '" + str
+		    + "' WHERE id LIKE '1';");
 
 	    new OutputData();
 	}
+
+	stat.close();
+	conn.close();
     }
 
     /**
@@ -354,24 +371,25 @@ public class Stations extends JPanel {
 	/*
 	 * Вывод данных АЗС
 	 */
-	ResultSet rs = DriverManager
-		.getConnection("jdbc:sqlite:" + Oil.PATH)
-		.createStatement()
-		.executeQuery(
-			"SELECT id,title,active,address FROM station WHERE district_id LIKE '"
-				+ district_id + "' AND comm_id LIKE '"
-				+ comm_id + "';");
+	Connection conn = DriverManager
+		.getConnection("jdbc:sqlite:" + Oil.PATH);
+
+	Statement stat = conn.createStatement();
+
+	ResultSet rs = stat
+		.executeQuery("SELECT id,title,active,address FROM station WHERE district_id LIKE '"
+			+ district_id + "' AND comm_id LIKE '" + comm_id + "';");
 
 	while (rs.next()) {
 	    /*
 	     * поиск последнего изменения
 	     */
-	    ResultSet time = DriverManager
-		    .getConnection("jdbc:sqlite:" + Oil.PATH)
-		    .createStatement()
-		    .executeQuery(
-			    "SELECT changedate,b80,b92,b95,bdis,id FROM change WHERE station_id LIKE '"
-				    + rs.getString(1) + "';");
+
+	    Statement stat2 = conn.createStatement();
+
+	    ResultSet time = stat2
+		    .executeQuery("SELECT changedate,b80,b92,b95,bdis,id FROM change WHERE station_id LIKE '"
+			    + rs.getString(1) + "';");
 
 	    Long max_time = (long) 0;
 	    String b80 = "";
@@ -393,6 +411,7 @@ public class Stations extends JPanel {
 		}
 	    }
 	    time.close();
+	    stat2.close();
 
 	    DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 	    Date date = new Date(max_time);
@@ -426,6 +445,9 @@ public class Stations extends JPanel {
 	    table.add(item);
 	}
 	rs.close();
+
+	stat.close();
+	conn.close();
 
 	/*
 	 * Скроллбар из-за количества записей, не влезавших в видимую область +
@@ -463,17 +485,18 @@ public class Stations extends JPanel {
      */
     @SuppressWarnings("unused")
     private void delStation(String station_id) throws SQLException {
-	DriverManager
-		.getConnection("jdbc:sqlite:" + Oil.PATH)
-		.createStatement()
-		.executeUpdate(
-			"DELETE FROM change WHERE station_id = '" + station_id
-				+ "';");
-	DriverManager
-		.getConnection("jdbc:sqlite:" + Oil.PATH)
-		.createStatement()
-		.executeUpdate(
-			"DELETE FROM station WHERE id = '" + station_id + "';");
+	Connection conn = DriverManager
+		.getConnection("jdbc:sqlite:" + Oil.PATH);
+
+	Statement stat = conn.createStatement();
+
+	stat.executeUpdate("DELETE FROM change WHERE station_id = '"
+		+ station_id + "';");
+	stat.executeUpdate("DELETE FROM station WHERE id = '" + station_id
+		+ "';");
+
+	stat.close();
+	conn.close();
 
 	refreshDataPanel();
     }

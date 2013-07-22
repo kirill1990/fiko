@@ -15,24 +15,31 @@ import ru.fiko.oil.panels.Station;
 import ru.fiko.oil.panels.Stations;
 import ru.fiko.oil.supp.ComboItem;
 
+public class TestCase {
 
-public class TestCase
-{
-
-	@Test
-	public void test() throws SQLException, ClassNotFoundException
+    @Test
+    public void test() throws SQLException, ClassNotFoundException {
+	Vector<Vector<String>> values = new Vector<Vector<String>>();
 	{
-		Vector<Vector<String>> values = new Vector<Vector<String>>();
-		{
-			String district_id = "0";
-			String comm_id = "0";
+	    String district_id = "0";
+	    String comm_id = "0";
 
-		ResultSet rs = DriverManager.getConnection("jdbc:sqlite:" + "oil.db").createStatement().executeQuery("SELECT id,title,active FROM station WHERE district_id LIKE '" + district_id + "' AND comm_id LIKE '" + comm_id + "';");
+	    ResultSet rs = DriverManager
+		    .getConnection("jdbc:sqlite:" + "oil.db")
+		    .createStatement()
+		    .executeQuery(
+			    "SELECT id,title,active FROM station WHERE district_id LIKE '"
+				    + district_id + "' AND comm_id LIKE '"
+				    + comm_id + "';");
 
-	while (rs.next())
-	{
+	    while (rs.next()) {
 		// поиск последнего изменения
-		ResultSet time = DriverManager.getConnection("jdbc:sqlite:" + Oil.PATH).createStatement().executeQuery("SELECT changedate,b80,b92,b95,bdis FROM change WHERE station_id LIKE '" + rs.getString(1) + "';");
+		ResultSet time = DriverManager
+			.getConnection("jdbc:sqlite:" + Oil.PATH)
+			.createStatement()
+			.executeQuery(
+				"SELECT changedate,b80,b92,b95,bdis FROM change WHERE station_id LIKE '"
+					+ rs.getString(1) + "';");
 
 		Long max_time = (long) 0;
 		String b80 = "";
@@ -40,18 +47,16 @@ public class TestCase
 		String b95 = "";
 		String bdis = "";
 
-		while (time.next())
-		{
-			Long temp = Long.parseLong(time.getString(1));
+		while (time.next()) {
+		    Long temp = Long.parseLong(time.getString(1));
 
-			if (temp > max_time)
-			{
-				max_time = temp;
-				b80 = time.getString(2);
-				b92 = time.getString(3);
-				b95 = time.getString(4);
-				bdis = time.getString(5);
-			}
+		    if (temp > max_time) {
+			max_time = temp;
+			b80 = time.getString(2);
+			b92 = time.getString(3);
+			b95 = time.getString(4);
+			bdis = time.getString(5);
+		    }
 		}
 		time.close();
 
@@ -75,10 +80,10 @@ public class TestCase
 		item.add(bdis);
 
 		values.add(item);
-	}
+	    }
 
-	rs.close();
-}
+	    rs.close();
 	}
+    }
 
 }

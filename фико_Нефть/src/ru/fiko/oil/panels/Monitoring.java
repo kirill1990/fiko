@@ -8,10 +8,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -269,6 +271,10 @@ public class Monitoring extends JPanel {
      * @throws SQLException
      */
     public void refreshDataPanel() throws SQLException {
+	Connection conn = DriverManager
+		    .getConnection("jdbc:sqlite:" + Oil.PATH);
+	Statement stat = conn.createStatement();
+	
 	/*
 	 * Удаляет компоненты с инф о АЗС
 	 */
@@ -294,10 +300,7 @@ public class Monitoring extends JPanel {
 	    /*
 	     * поиск последнего изменения
 	     */
-	    ResultSet time = DriverManager
-		    .getConnection("jdbc:sqlite:" + Oil.PATH)
-		    .createStatement()
-		    .executeQuery(
+	    ResultSet time = stat.executeQuery(
 			    "SELECT changedate,b80,b92,b95,bdis,id FROM change WHERE station_id LIKE '"
 				    + gas[label_id][index][1] + "';");
 
@@ -327,10 +330,7 @@ public class Monitoring extends JPanel {
 
 	    ItemStation item = new ItemStation();
 
-	    ResultSet rs = DriverManager
-		    .getConnection("jdbc:sqlite:" + Oil.PATH)
-		    .createStatement()
-		    .executeQuery(
+	    ResultSet rs = stat.executeQuery(
 			    "SELECT id,title,active,address FROM station WHERE id LIKE '"
 				    + gas[label_id][index][1] + "';");
 	    if (rs.next()) {
@@ -359,7 +359,10 @@ public class Monitoring extends JPanel {
 		table.add(item);
 	    }
 	    rs.close();
+	    stat.close();
 	}
+	
+	conn.close();
 	// rs.close();
 
 	/*

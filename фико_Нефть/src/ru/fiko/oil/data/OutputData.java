@@ -191,7 +191,7 @@ public class OutputData {
 	 * формирование значений цен результата для вывода
 	 */
 	for (int comm = 0; comm < commercial.length; comm++) {
-//	    int count_det = 0;
+	    // int count_det = 0;
 
 	    /**
 	     * хранит id всех АЗС одного сетевого поставщика

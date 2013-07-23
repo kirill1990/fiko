@@ -473,6 +473,7 @@ public class Stations extends JPanel {
     private void editableStation(String station_id) throws SQLException {
 	this.removeAll();
 	this.add(new Station(this, station_id));
+	this.validate();
 	this.repaint();
     }
 

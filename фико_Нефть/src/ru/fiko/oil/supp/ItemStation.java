@@ -241,12 +241,12 @@ public class ItemStation extends JPanel {
     }
 
     private boolean validText(String text) {
-	System.out.println(text);
 	Pattern p = Pattern.compile("[0-9]{1,3}[.,]{1}[0-9]{1,2}");
 	Pattern p2 = Pattern.compile("-");
-	Matcher m = p.matcher(text);
-	System.out.println(m.matches());
-	return m.matches() || p2.matcher(text).matches();
+	Pattern p3 = Pattern.compile("");
+
+	return p.matcher(text).matches() || p2.matcher(text).matches()
+		|| p3.matcher(text).matches();
     }
 
     public String getStationId() {

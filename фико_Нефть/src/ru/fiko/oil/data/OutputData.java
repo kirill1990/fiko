@@ -81,7 +81,7 @@ public class OutputData {
 	grafics();
 
 	String url = "http://fondim.kaluga.net/map_oil/upload.php";
-	// String url = "http://localhost/map_oil/upload.php";
+//	 String url = "http://localhost/map_oil/upload.php";
 	String[] filename = new String[5];
 	filename[0] = "main.xml";
 	filename[1] = "providers.xml";
@@ -233,7 +233,7 @@ public class OutputData {
 			.getConnection("jdbc:sqlite:" + Oil.PATH)
 			.createStatement()
 			.executeQuery(
-				"SELECT changedate, b95, b92, bdis FROM change WHERE station_id LIKE '"
+				"SELECT changedate, b95, b92, bdis, id FROM change WHERE station_id LIKE '"
 					+ stationsComm.get(st) + "';");
 
 		Vector<String[]> time = new Vector<String[]>();
@@ -313,7 +313,6 @@ public class OutputData {
 		}
 	    }
 
-	    System.out.println("Размер 92 " + all_b92.size());
 	    /**
 	     * Поиск среднего значения для сетевого поставщика
 	     */
@@ -343,12 +342,13 @@ public class OutputData {
 		String[] temp_92 = all_b92.get(station);
 		String[] temp_dis = all_bdis.get(station);
 
+		
 		for (int i = 0; i < kvartal.length; i++) {
+		    
 		    b95[i] = new BigDecimal(b95[i]
 			    + parseStringToDouble(temp_95[i])).setScale(2,
 			    RoundingMode.HALF_UP).doubleValue();
-		    // if (comm == 0 && i == 0)
-		    // System.out.println(b95[i]);
+		    
 		    b92[i] = new BigDecimal(b92[i]
 			    + parseStringToDouble(temp_92[i])).setScale(2,
 			    RoundingMode.HALF_UP).doubleValue();
@@ -957,6 +957,8 @@ public class OutputData {
     }
 
     private Double parseStringToDouble(String value) {
+	
+	
 	if (value != null) {
 	    value = value.replace(" ", "");
 	    value = value.replace(" ", "");

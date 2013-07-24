@@ -20,6 +20,7 @@ import ru.fiko.purchase.supports.ComboItemBooleanValue;
 import ru.fiko.purchase.supports.ComboItemIntValue;
 import ru.fiko.purchase.windows.Organization;
 import ru.fiko.purchase.windows.SearchOrg;
+import ru.fiko.purchase.windows.Settings;
 
 public class Purchases223FZ extends JFrame {
 
@@ -342,6 +343,17 @@ public class Purchases223FZ extends JFrame {
     public void setPanelPurchase() {
 	this.getContentPane().removeAll();
 
+	this.validate();
+	this.repaint();
+    }
+
+    public void setPanelSettings() {
+	this.getContentPane().removeAll();
+	try {
+	    this.getContentPane().add(new Settings(this));
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
 	this.validate();
 	this.repaint();
     }

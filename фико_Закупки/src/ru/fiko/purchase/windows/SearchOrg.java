@@ -84,7 +84,7 @@ public class SearchOrg extends JPanel {
      * Указатель на родителя.<br>
      * Используется для смены компонентов окна.
      */
-    private Purchases223FZ purchase;
+    private Purchases223FZ purchase223FZ;
 
     /**
      * Конструктор. Инициализация структуры панели поиска организации.
@@ -97,7 +97,7 @@ public class SearchOrg extends JPanel {
      */
     public SearchOrg(Purchases223FZ purchase) throws SQLException,
 	    ClassNotFoundException {
-	this.purchase = purchase;
+	this.purchase223FZ = purchase;
 
 	Class.forName("org.sqlite.JDBC");
 
@@ -506,7 +506,7 @@ public class SearchOrg extends JPanel {
 			 * Переход к редактированию данных новой организации
 			 */
 			openOrg(id_new_org);
-			SearchOrg.this.purchase.invertAdditonBtnOrganization();
+			SearchOrg.this.purchase223FZ.invertAdditonBtnOrganization();
 
 			/**
 			 * Обновление таблицы необходимо, т.к. сам класс
@@ -522,7 +522,17 @@ public class SearchOrg extends JPanel {
 	    }
 	});
 
-	JPanel buttons = new JPanel(new GridLayout(1, 1));
+	JButton btn_settings = new JButton("Настройки");
+	btn_settings.addActionListener(new ActionListener() {
+	    
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		openSettings();
+	    }
+	});
+	
+	JPanel buttons = new JPanel(new GridLayout(1, 2));
+	buttons.add(btn_settings);
 	buttons.add(btn_add_org);
 
 	this.setLayout(new BorderLayout());
@@ -670,9 +680,16 @@ public class SearchOrg extends JPanel {
      */
     private void openOrg(int id) {
 	try {
-	    this.purchase.setPanelOrganization(id);
+	    this.purchase223FZ.setPanelOrganization(id);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
+    }
+    
+    /**
+     * Переход к настройкам БД
+     */
+    private void openSettings(){
+	    this.purchase223FZ.setPanelSettings();	
     }
 }

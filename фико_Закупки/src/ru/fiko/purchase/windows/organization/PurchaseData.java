@@ -1,8 +1,6 @@
 package ru.fiko.purchase.windows.organization;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +8,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
@@ -29,7 +26,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
-import javax.security.auth.Destroyable;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -663,7 +659,6 @@ public class PurchaseData extends JFrame {
     }
 
     private boolean saveData() throws SQLException {
-	// TODO проверка цифр
 
 	Integer count_alls = new Integer(count_all.getText());
 	Integer count_dos = new Integer(count_do.getText());

@@ -335,12 +335,14 @@ public class Info extends JPanel {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	    try {
-		save_Org_Info();
+		if(save_Org_Info()){
+		    JButton btn = (JButton) e.getSource();
+		    btn.setEnabled(false);
+		}
+		
 	    } catch (SQLException e1) {
 		e1.printStackTrace();
 	    }
-	    JButton btn = (JButton) e.getSource();
-	    btn.setEnabled(false);
 	}
     }
 
@@ -407,7 +409,7 @@ public class Info extends JPanel {
      * 
      * @throws SQLException
      */
-    public void save_Org_Info() throws SQLException {
+    public boolean save_Org_Info() throws SQLException {
 
 	boolean regist = ((ComboItemBooleanValue) reg_box.getSelectedItem())
 		.getValue();
@@ -416,6 +418,26 @@ public class Info extends JPanel {
 		+ Purchases223FZ.PATHTODB);
 
 	Statement stat = conn.createStatement();
+	
+	/**
+	 * Проверка на существоавание организации. Проверка осуществляется по ИНН.
+	 */
+	ResultSet rs = stat.executeQuery("SELECT id FROM organization WHERE inn LIKE '"+inn.getText()+"';");
+	
+	while(rs.next()){
+	    if(rs.getInt("id") != this.org.getId()){
+		/*
+		 * Организация уже существует в бд. Данные не заносим в бд.
+		 */
+		JOptionPane.showMessageDialog(null, "Организация с таким ИНН уже записана! Сохранение данных не выполнено");
+		rs.close();
+		stat.close();
+		conn.close();
+		return false;
+	    }
+	}
+	
+	rs.close();
 
 	// Наименование организации
 	stat.executeUpdate("UPDATE organization SET name = '" + name.getText()
@@ -511,6 +533,7 @@ public class Info extends JPanel {
 	conn.close();
 
 	this.org.getZakon223_FZ().updateSearchOrgTable();
+	return true;
     }
 
     /**

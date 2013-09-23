@@ -28,11 +28,10 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
-import ru.fiko.purchase.main.Purchases223FZ;
+import ru.fiko.purchase.Main;
 import ru.fiko.purchase.supports.CheckListItem;
 import ru.fiko.purchase.supports.CheckListRenderer;
 import ru.fiko.purchase.supports.ComboItemBooleanValue;
@@ -53,7 +52,7 @@ public class Info extends JPanel {
     /**
      * Компонент профиля. Строка c наименования организации.
      */
-    private JTextArea name;
+    private JTextField name;
 
     /**
      * Компонент профиля. Строка с ИНН организации.
@@ -63,7 +62,7 @@ public class Info extends JPanel {
     /**
      * Компонент профиля. Состояние регистрации организации.
      */
-    private JComboBox reg_box = new JComboBox(Purchases223FZ.registr_items);
+    private JComboBox reg_box = new JComboBox(Main.registr_items);
 
     /**
      * Компонент профиля. Строка с положением о закупке по ООС.
@@ -120,7 +119,7 @@ public class Info extends JPanel {
     private void getInfoFromBD() throws SQLException {
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	Statement stat = conn.createStatement();
 	ResultSet rs_org = stat
@@ -133,16 +132,16 @@ public class Info extends JPanel {
 	    inn = new JTextField(rs_org.getString("inn"));
 
 	    // Наименование организации
-	    name = new JTextArea(rs_org.getString("name"));
+	    name = new JTextField(rs_org.getString("name"));
 
 	    // Положение о закупке на ООС
 	    polojen_ooc = new JTextField(rs_org.getString("polojen_ooc"));
 
 	    // Состояние регистрации организации
 	    if (rs_org.getString("regist").equals("true"))
-		reg_box.setSelectedItem(Purchases223FZ.registr_items[0]);
+		reg_box.setSelectedItem(Main.registr_items[0]);
 	    else
-		reg_box.setSelectedItem(Purchases223FZ.registr_items[1]);
+		reg_box.setSelectedItem(Main.registr_items[1]);
 
 	} else {
 	    /**
@@ -196,9 +195,9 @@ public class Info extends JPanel {
 	 * Строка для ввода наименования организации
 	 */
 	name.setToolTipText("Наименование организации");
-	name.setRows(2);
-	name.setLineWrap(true);
-	name.setWrapStyleWord(true);
+//	name.setRows(2);
+//	name.setLineWrap(true);
+//	name.setWrapStyleWord(true);
 	name.setBackground(new Color(177, 222, 255));
 	name.setBackground(new Color(226, 243, 255));
 	// name.setBackground(new Color(242, 241, 240));
@@ -208,7 +207,7 @@ public class Info extends JPanel {
 	/**
 	 * Кнопка раскрытия/скрытие дополнительных данных
 	 */
-	JButton btn_addition = new JButton("  +  ");
+	JButton btn_addition = new JButton("Дополнительные данные");
 	btn_addition.setToolTipText("Дополнительные данные");
 	btn_addition.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent arg0) {
@@ -305,6 +304,7 @@ public class Info extends JPanel {
 	 * Сборка положения о закупках и кнопки save
 	 */
 	JPanel p_polojen_save = new JPanel(new BorderLayout(5, 5));
+	p_polojen_save.add(new JLabel("Опубликование положения о закупках на ООС:"), BorderLayout.WEST);
 	p_polojen_save.add(polojen_ooc, BorderLayout.CENTER);
 	p_polojen_save.add(save, BorderLayout.EAST);
 
@@ -338,8 +338,8 @@ public class Info extends JPanel {
 		if(save_Org_Info()){
 		    JButton btn = (JButton) e.getSource();
 		    btn.setEnabled(false);
+		    profile_hidden.setVisible(false);
 		}
-		
 	    } catch (SQLException e1) {
 		e1.printStackTrace();
 	    }
@@ -415,7 +415,7 @@ public class Info extends JPanel {
 		.getValue();
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	Statement stat = conn.createStatement();
 	

@@ -20,7 +20,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import ru.fiko.purchase.main.Purchases223FZ;
+import ru.fiko.purchase.Main;
 import ru.fiko.purchase.windows.Organization;
 
 public class Purchases extends JPanel {
@@ -66,6 +66,7 @@ public class Purchases extends JPanel {
 	     * 
 	     */
 	    private static final long serialVersionUID = -5957489805838255399L;
+	    
 
 	    // Запрет на редактирование ячеек
 	    @Override
@@ -73,6 +74,8 @@ public class Purchases extends JPanel {
 		return false;
 	    }
 	};
+	purchase_table.setAutoCreateRowSorter(true);
+	
 
 	purchase_table.addMouseListener(new MouseAdapter() {
 	    public void mouseClicked(MouseEvent e) {
@@ -132,7 +135,7 @@ public class Purchases extends JPanel {
 				     */
 				    Connection conn = DriverManager
 					    .getConnection("jdbc:sqlite:"
-						    + Purchases223FZ.PATHTODB);
+						    + Main.PATHTODB);
 				    Statement stat = conn.createStatement();
 
 				    stat.executeUpdate("DELETE FROM purchase WHERE id = '"
@@ -170,13 +173,13 @@ public class Purchases extends JPanel {
      * Добавление к закупкам реализации данных о закупке.
      * 
      * @param id
-     *            - id закупки
+     *            // * - id закупки
      */
     private void addPurchaseData(int id) {
 	try {
 	    data = new PurchaseData(id, this);
 
-//	    this.add(data, BorderLayout.SOUTH);
+	    // this.add(data, BorderLayout.SOUTH);
 	    this.repaint();
 	    this.validate();
 	} catch (Exception e1) {
@@ -194,10 +197,36 @@ public class Purchases extends JPanel {
     }
 
     public void newPurchase() throws SQLException {
+
+	String new_number = JOptionPane
+		.showInputDialog("Введите № новой закупки: ");
+
+	if (new_number != null)
+	    new_number = new_number.trim();
+	else
+	    new_number = "";
+
+	if (new_number.length() < 1)
+	    return;
+
 	org.getId();
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
+
+	Statement stat2 = conn.createStatement();
+
+	ResultSet rs2 = stat2.executeQuery("SELECT id FROM purchase"
+		+ " WHERE number LIKE '" + new_number
+		+ "' AND organization_id " + " LIKE '" + org.getId() + "'");
+
+	if (rs2.next()) {
+	    JOptionPane.showMessageDialog(null,
+		    "Закупки с таким № уже записана!");
+	    return;
+	}
+	rs2.close();
+	stat2.close();
 
 	PreparedStatement pst = conn
 		.prepareStatement("INSERT INTO purchase VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
@@ -213,9 +242,11 @@ public class Purchases extends JPanel {
 	pst.setInt(5, 1);
 
 	// дата
-	pst.setString(6, Long.toString(System.currentTimeMillis()));
+//	pst.setString(6, Long.toString(System.currentTimeMillis()));
+	pst.setString(6, "1375340959793");
+	
 	// № закупки
-	pst.setString(7, "");
+	pst.setString(7, new_number);
 
 	// Наименование закупки
 	pst.setString(8, "");

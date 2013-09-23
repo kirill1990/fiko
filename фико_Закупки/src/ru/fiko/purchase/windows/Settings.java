@@ -24,7 +24,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-import ru.fiko.purchase.main.Purchases223FZ;
+import ru.fiko.purchase.Main;
 import ru.fiko.purchase.supports.ComboItemStringValue;
 
 public class Settings extends JPanel {
@@ -34,7 +34,7 @@ public class Settings extends JPanel {
      */
     private static final long serialVersionUID = 8289627279722245129L;
 
-    private Purchases223FZ purchases223fz;
+    private Main purchases223fz;
 
     /**
      * Определяет таблицу, у которой изменяют данные
@@ -58,7 +58,7 @@ public class Settings extends JPanel {
 	    new ComboItemStringValue("type", "Классификация закупки"),
 	    new ComboItemStringValue("aspect", "Способ размещения заказа") };
 
-    public Settings(Purchases223FZ purchases223fz) throws SQLException {
+    public Settings(Main purchases223fz) throws SQLException {
 	this.purchases223fz = purchases223fz;
 
 	/**
@@ -161,7 +161,7 @@ public class Settings extends JPanel {
 	 * Поиск наименований
 	 */
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	Statement stat = conn.createStatement();
 
@@ -207,7 +207,7 @@ public class Settings extends JPanel {
      */
     private void addStringToTable(String title) throws SQLException {
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	PreparedStatement pst = conn.prepareStatement("INSERT INTO "
 		+ getTable() + " VALUES (?, ?);");
@@ -224,7 +224,7 @@ public class Settings extends JPanel {
 
     private void updateString(String id, String title) throws SQLException {
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	Statement stat = conn.createStatement();
 

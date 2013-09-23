@@ -36,7 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import ru.fiko.purchase.main.Purchases223FZ;
+import ru.fiko.purchase.Main;
 import ru.fiko.purchase.supports.ComboItemBooleanValue;
 import ru.fiko.purchase.supports.ComboItemIntValue;
 
@@ -157,7 +157,7 @@ public class PurchaseData extends JFrame {
     private JPanel initPanel() throws SQLException {
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	Statement stat = conn.createStatement();
 
@@ -228,7 +228,7 @@ public class PurchaseData extends JFrame {
 	/**
 	 * Статус закупки
 	 */
-	status = new JComboBox(Purchases223FZ.status_items);
+	status = new JComboBox(Main.status_items);
 	status.setToolTipText("Статус закупки");
 	status.addActionListener(new ListenerEnabledSaveBtn());
 
@@ -307,7 +307,7 @@ public class PurchaseData extends JFrame {
 	/**
 	 * Закупка выполнена Да/Нет
 	 */
-	dogovor = new JComboBox(Purchases223FZ.dogovor_items);
+	dogovor = new JComboBox(Main.dogovor_items);
 	dogovor.setToolTipText("Договор");
 	dogovor.addActionListener(new ListenerEnabledSaveBtn());
 
@@ -685,7 +685,7 @@ public class PurchaseData extends JFrame {
 	// return false;
 	// System.out.println(purchase_id);
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	String query = "UPDATE purchase SET subject_title = ? , subject_title_low = ?, number = ?, "
 		+ " subject_id = ?, aspect_id = ?, type_id = ?, date = ?, status = ?, count_all = ?,"

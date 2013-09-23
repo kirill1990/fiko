@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ru.fiko.purchase.main;
+package ru.fiko.purchase;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -19,10 +19,10 @@ import javax.swing.UnsupportedLookAndFeelException;
 import ru.fiko.purchase.supports.ComboItemBooleanValue;
 import ru.fiko.purchase.supports.ComboItemIntValue;
 import ru.fiko.purchase.windows.Organization;
-import ru.fiko.purchase.windows.SearchOrg;
+import ru.fiko.purchase.windows.TableOrg;
 import ru.fiko.purchase.windows.Settings;
 
-public class Purchases223FZ extends JFrame {
+public class Main extends JFrame {
 
     /**
      * serialVersionUID
@@ -32,7 +32,7 @@ public class Purchases223FZ extends JFrame {
     private static int WIDTH = 800;
     private static int HEIGHT = 500;
 
-    private SearchOrg searchOrg;
+    private TableOrg searchOrg;
     private Organization organization;
 
     /**
@@ -119,7 +119,7 @@ public class Purchases223FZ extends JFrame {
 	    new ComboItemBooleanValue(true, "Заключен"),
 	    new ComboItemBooleanValue(false, "Не заключен") };
 
-    public Purchases223FZ() throws SQLException, ClassNotFoundException {
+    public Main() throws SQLException, ClassNotFoundException {
 	/*
 	 * Инициализация параметров окна
 	 */
@@ -164,7 +164,7 @@ public class Purchases223FZ extends JFrame {
 	 */
 	Class.forName("org.sqlite.JDBC");
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	Statement stat = conn.createStatement();
 
@@ -300,14 +300,14 @@ public class Purchases223FZ extends JFrame {
 	stat.close();
 	conn.close();
 
-	new Purchases223FZ();
+	new Main();
     }
 
     public void setPanelSearchOrg() throws SQLException, ClassNotFoundException {
 	this.getContentPane().removeAll();
 
 	if (searchOrg == null)
-	    searchOrg = new SearchOrg(this);
+	    searchOrg = new TableOrg(this);
 
 	this.getContentPane().add(searchOrg);
 	this.validate();

@@ -27,7 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-import ru.fiko.purchase.main.Purchases223FZ;
+import ru.fiko.purchase.Main;
 import ru.fiko.purchase.supports.ComboItemIntValue;
 import ru.fiko.purchase.windows.Organization;
 
@@ -83,7 +83,7 @@ public class Filter extends JPanel {
     /**
      * Список со состоянием закупки
      */
-    private JComboBox filter_status = new JComboBox(Purchases223FZ.status_items);
+    private JComboBox filter_status = new JComboBox(Main.status_items);
 
     /**
      * Список "Способ размещения заказа"
@@ -139,7 +139,7 @@ public class Filter extends JPanel {
 	 */
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	Statement stat = conn.createStatement();
 
@@ -198,7 +198,7 @@ public class Filter extends JPanel {
 	/**
 	 * Кнопка раскрытия/скрытие расширенного поиска
 	 */
-	JButton filter_btn_addition = new JButton("  +  ");
+	JButton filter_btn_addition = new JButton("Расширенный поиск");
 	filter_btn_addition.setToolTipText("Расширенный поиск");
 	filter_btn_addition.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent arg0) {
@@ -357,7 +357,7 @@ public class Filter extends JPanel {
      */
     public void updatePurchaseTable() throws SQLException {
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Purchases223FZ.PATHTODB);
+		+ Main.PATHTODB);
 
 	/**
 	 * Хранит данные, для внесения в таблицу

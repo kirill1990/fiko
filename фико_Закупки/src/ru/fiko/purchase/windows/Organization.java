@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import ru.fiko.purchase.main.Purchases223FZ;
+import ru.fiko.purchase.Main;
 import ru.fiko.purchase.windows.organization.Info;
 import ru.fiko.purchase.windows.organization.Purchases;
 
@@ -27,7 +27,7 @@ public class Organization extends JPanel {
      * Указатель на родителя.<br>
      * Используется для смены компонентов окна.
      */
-    private Purchases223FZ zakon223_FZ;
+    private Main zakon223_FZ;
 
     /**
      * ID организация в базе данных
@@ -55,7 +55,7 @@ public class Organization extends JPanel {
      * @throws ClassNotFoundException
      * @throws SQLException
      */
-    public Organization(Purchases223FZ parent, int id) throws SQLException {
+    public Organization(Main parent, int id) throws SQLException {
 
 	this.zakon223_FZ = parent;
 	this.id = id;
@@ -167,7 +167,7 @@ public class Organization extends JPanel {
 
 	JTabbedPane tabbed = new JTabbedPane();
 	tabbed.add("Закупки", this.purchase = new Purchases(this));
-	tabbed.add("Отчет", new JLabel("sdfsdf"));
+	tabbed.add("Отчет", new JLabel("В разработке"));
 
 	JPanel data_panel = new JPanel(new BorderLayout());
 	data_panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
@@ -176,7 +176,7 @@ public class Organization extends JPanel {
 	return data_panel;
     }
 
-    public Purchases223FZ getZakon223_FZ() {
+    public Main getZakon223_FZ() {
 	return zakon223_FZ;
     }
 

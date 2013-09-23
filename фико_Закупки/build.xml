@@ -1,0 +1,75 @@
+<project name="Закупки.jar" default="main" basedir=".">
+
+	<!-- Наименование исполняемого файла -->
+	<property name="jarname" value="Закупки" />
+
+	<!-- Директория с исходным кодом -->
+	<property name="src.dir" value="src" />
+	<!-- Путь к директории с компилированными классами -->
+	<property name="build.dir" value="build" />
+	<!-- Путь к директории в которую будет уложен jar файл -->
+	<property name="dist.dir" value="dist" />
+	<!-- Директория с внешними библиотеками -->
+	<property name="lib.dir" value="lib" />
+
+	<property name="test.dir" location="test" />
+	<property name="test.report.dir" value="testreport" />
+
+	<!-- Наименование внешних библиотек -->
+	<property name="jcalendar" value="jcalendar*.jar" />
+	<property name="sqlite" value="sqlite*.jar" />
+
+	<!-- ClassPath к внешним библиотекам-->
+	<path id="lib.class.path">
+		<fileset dir="${lib.dir}">
+			<include name="jcalendar*.jar" />
+			<include name="sqlite*.jar" />
+		</fileset>
+	</path>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: clean                     
+         - - - - - - - - - - - - - - - - - -->
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}}" />
+		<delete dir="${test.report.dir}}" />
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: makedir                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="makedir">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${test.report.dir}" />
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: compile                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="compile" depends="clean, makedir">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="true" classpathref="lib.class.path" />
+	</target>
+
+	<!-- ================================= 
+          target: jar              
+         ================================= -->
+	<target name="jar" depends="compile">
+		<jar destfile="${dist.dir}\${jarname}.jar" basedir="${build.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="ru.fiko.purchase.Main" />
+			</manifest>
+			<zipgroupfileset dir="${lib.dir}" includes="${jcalendar}" />
+			<zipgroupfileset dir="${lib.dir}" includes="${sqlite}" />
+		</jar>
+	</target>
+
+	<!-- ================================= 
+          target: main              
+         ================================= -->
+	<target name="main" depends="compile, jar">
+		<description>Main target</description>
+	</target>
+
+</project>

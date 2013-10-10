@@ -1,4 +1,4 @@
-package ru.fiko.purchase.windows.organization;
+package ru.fiko.purchase.windows.purchase;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -20,8 +20,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import ru.fiko.purchase.Main;
-import ru.fiko.purchase.windows.Organization;
+import ru.fiko.purchase.Constant;
+import ru.fiko.purchase.windows.organization.Organization;
 
 public class Purchases extends JPanel {
 
@@ -40,7 +40,7 @@ public class Purchases extends JPanel {
      */
     private JTable purchase_table;
 
-    private PurchaseData data;
+    private Data data;
 
     private Filter filter;
 
@@ -135,7 +135,7 @@ public class Purchases extends JPanel {
 				     */
 				    Connection conn = DriverManager
 					    .getConnection("jdbc:sqlite:"
-						    + Main.PATHTODB);
+						    + Constant.PATHTODB);
 				    Statement stat = conn.createStatement();
 
 				    stat.executeUpdate("DELETE FROM purchase WHERE id = '"
@@ -177,7 +177,7 @@ public class Purchases extends JPanel {
      */
     private void addPurchaseData(int id) {
 	try {
-	    data = new PurchaseData(id, this);
+	    data = new Data(id, this);
 
 	    // this.add(data, BorderLayout.SOUTH);
 	    this.repaint();
@@ -212,7 +212,7 @@ public class Purchases extends JPanel {
 	org.getId();
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	Statement stat2 = conn.createStatement();
 

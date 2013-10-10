@@ -1,4 +1,4 @@
-package ru.fiko.purchase.windows;
+package ru.fiko.purchase.windows.organization;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -8,13 +8,11 @@ import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import ru.fiko.purchase.Main;
-import ru.fiko.purchase.windows.organization.Info;
-import ru.fiko.purchase.windows.organization.Purchases;
+import ru.fiko.purchase.windows.purchase.Purchases;
 
 public class Organization extends JPanel {
 
@@ -55,7 +53,7 @@ public class Organization extends JPanel {
      * @throws ClassNotFoundException
      * @throws SQLException
      */
-    public Organization(Main parent, int id) throws SQLException {
+    public Organization(Main parent, int id) throws SQLException, ClassNotFoundException {
 
 	this.zakon223_FZ = parent;
 	this.id = id;
@@ -162,12 +160,13 @@ public class Organization extends JPanel {
      * 
      * @return data_panel - панель с двумя вкладками "закупки" и "отчетность"
      * @throws SQLException
+     * @throws ClassNotFoundException 
      */
-    private JPanel data_panel() throws SQLException {
+    private JPanel data_panel() throws SQLException, ClassNotFoundException {
 
 	JTabbedPane tabbed = new JTabbedPane();
 	tabbed.add("Закупки", this.purchase = new Purchases(this));
-	tabbed.add("Отчет", new JLabel("В разработке"));
+	tabbed.add("Реестр отчетности по договорам", new Reports(this));
 
 	JPanel data_panel = new JPanel(new BorderLayout());
 	data_panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));

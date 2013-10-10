@@ -24,6 +24,8 @@
 		<fileset dir="${lib.dir}">
 			<include name="jcalendar*.jar" />
 			<include name="sqlite*.jar" />
+			<include name="junit*.jar" />
+			<include name="hamcrest*.jar" />
 		</fileset>
 	</path>
 
@@ -50,6 +52,7 @@
          - - - - - - - - - - - - - - - - - -->
 	<target name="compile" depends="clean, makedir">
 		<javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="true" classpathref="lib.class.path" />
+		<javac srcdir="${test.dir}" destdir="${build.dir}" includeantruntime="true" classpathref="lib.class.path" />
 	</target>
 
 	<!-- ================================= 
@@ -65,10 +68,27 @@
 		</jar>
 	</target>
 
+	<target name="junit" depends="compile">
+		<junit printsummary="on" fork="true" haltonfailure="yes">
+			<classpath refid="lib.class.path" />
+
+			<classpath>
+				<pathelement location="${build.dir}" />
+			</classpath>
+
+			<batchtest fork="yes" todir="${reports.tests}">
+				<fileset dir="${test.dir}">
+					<include name="**/*Test*.java" />
+					<exclude name="**/AllTests.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
 	<!-- ================================= 
           target: main              
          ================================= -->
-	<target name="main" depends="compile, jar">
+	<target name="main" depends="compile, jar, junit">
 		<description>Main target</description>
 	</target>
 

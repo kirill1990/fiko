@@ -1,4 +1,4 @@
-package ru.fiko.purchase.windows.organization;
+package ru.fiko.purchase.windows.purchase;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -27,9 +27,9 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-import ru.fiko.purchase.Main;
+import ru.fiko.purchase.Constant;
 import ru.fiko.purchase.supports.ComboItemIntValue;
-import ru.fiko.purchase.windows.Organization;
+import ru.fiko.purchase.windows.organization.Organization;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -83,7 +83,7 @@ public class Filter extends JPanel {
     /**
      * Список со состоянием закупки
      */
-    private JComboBox filter_status = new JComboBox(Main.status_items);
+    private JComboBox filter_status = new JComboBox(Constant.status_items);
 
     /**
      * Список "Способ размещения заказа"
@@ -139,7 +139,7 @@ public class Filter extends JPanel {
 	 */
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	Statement stat = conn.createStatement();
 
@@ -357,7 +357,7 @@ public class Filter extends JPanel {
      */
     public void updatePurchaseTable() throws SQLException {
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	/**
 	 * Хранит данные, для внесения в таблицу

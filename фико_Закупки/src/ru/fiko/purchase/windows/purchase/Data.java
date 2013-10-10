@@ -1,4 +1,4 @@
-package ru.fiko.purchase.windows.organization;
+package ru.fiko.purchase.windows.purchase;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -36,13 +36,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import ru.fiko.purchase.Main;
+import ru.fiko.purchase.Constant;
 import ru.fiko.purchase.supports.ComboItemBooleanValue;
 import ru.fiko.purchase.supports.ComboItemIntValue;
+import ru.fiko.purchase.supports.ListenerTextChangeTrue;
 
 import com.toedter.calendar.JDateChooser;
 
-public class PurchaseData extends JFrame {
+public class Data extends JFrame {
 
     /**
      * serialVersionUID
@@ -129,8 +130,8 @@ public class PurchaseData extends JFrame {
      */
     private JButton save;
 
-    public PurchaseData(int purchase_id, Purchases purchases)
-	    throws SQLException {
+    public Data(int purchase_id, Purchases purchases)
+	    throws SQLException, ClassNotFoundException {
 	this.purchase_id = purchase_id;
 	this.purchases = purchases;
 
@@ -153,11 +154,13 @@ public class PurchaseData extends JFrame {
      * Инициализация панели.
      * 
      * @throws SQLException
+     * @throws ClassNotFoundException
      */
-    private JPanel initPanel() throws SQLException {
+    private JPanel initPanel() throws SQLException, ClassNotFoundException {
 
+	Class.forName("org.sqlite.JDBC");
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	Statement stat = conn.createStatement();
 
@@ -228,7 +231,7 @@ public class PurchaseData extends JFrame {
 	/**
 	 * Статус закупки
 	 */
-	status = new JComboBox(Main.status_items);
+	status = new JComboBox(Constant.status_items);
 	status.setToolTipText("Статус закупки");
 	status.addActionListener(new ListenerEnabledSaveBtn());
 
@@ -245,6 +248,24 @@ public class PurchaseData extends JFrame {
 	aspect = new JComboBox(list_aspect);
 	aspect.setToolTipText("Способ размещения заказа");
 	aspect.addActionListener(new ListenerEnabledSaveBtn());
+	aspect.addActionListener(new ActionListener() {
+	    
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		JComboBox aspect = (JComboBox) arg0.getSource();
+		
+		ComboItemIntValue value = (ComboItemIntValue)aspect.getSelectedItem();
+		if(value.getValue() ==2){
+		    status.setSelectedIndex(0);
+		    count_do.setValue(1);
+		    count_all.setValue(1);
+		    dogovor.setSelectedIndex(0);
+		    
+		    torgi_finish_cost.setValue(torgi_start_cost.getValue());
+		}
+		
+	    }
+	});
 
 	/**
 	 * Предмет закупки
@@ -273,6 +294,7 @@ public class PurchaseData extends JFrame {
 	torgi_start_cost.setToolTipText("Начальная цена закупки");
 	torgi_start_cost.setColumns(15);
 	torgi_start_cost.addKeyListener(new ListenerEnabledSaveBtn());
+	torgi_start_cost.addFocusListener(new ListenerTextChangeTrue());
 
 	/**
 	 * Конечная цена закупки
@@ -281,6 +303,7 @@ public class PurchaseData extends JFrame {
 	torgi_finish_cost.setToolTipText("Конечная цена закупки");
 	torgi_finish_cost.setColumns(15);
 	torgi_finish_cost.addKeyListener(new ListenerEnabledSaveBtn());
+	torgi_finish_cost.addFocusListener(new ListenerTextChangeTrue());
 
 	/**
 	 * Экономия
@@ -307,7 +330,7 @@ public class PurchaseData extends JFrame {
 	/**
 	 * Закупка выполнена Да/Нет
 	 */
-	dogovor = new JComboBox(Main.dogovor_items);
+	dogovor = new JComboBox(Constant.dogovor_items);
 	dogovor.setToolTipText("Договор");
 	dogovor.addActionListener(new ListenerEnabledSaveBtn());
 
@@ -566,8 +589,7 @@ public class PurchaseData extends JFrame {
 	BigDecimal start_big = new BigDecimal(start);
 	BigDecimal finish_big = new BigDecimal(finish);
 
-	BigDecimal eco = start_big.subtract(finish_big).setScale(2,
-		RoundingMode.HALF_UP);
+	BigDecimal eco = calcEco(start_big, finish_big);
 
 	BigDecimal per = new BigDecimal(0);
 	if (start_big.doubleValue() != 0.0)
@@ -576,6 +598,19 @@ public class PurchaseData extends JFrame {
 		    .setScale(2, RoundingMode.HALF_UP);
 
 	return eco.toString() + " : " + per + "%";
+    }
+
+    public BigDecimal calcEco(BigDecimal start, BigDecimal finish) {
+	return start.subtract(finish).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal calcPerEco(BigDecimal start, BigDecimal finish) {
+	if (start.doubleValue() > 0.0 && finish.doubleValue() > 0.0)
+	    return calcEco(start, finish).multiply(BigDecimal.valueOf(100))
+		    .divide(finish, new MathContext(2))
+		    .setScale(2, RoundingMode.HALF_UP);
+	else
+	    return new BigDecimal(0);
     }
 
     /**
@@ -685,7 +720,7 @@ public class PurchaseData extends JFrame {
 	// return false;
 	// System.out.println(purchase_id);
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	String query = "UPDATE purchase SET subject_title = ? , subject_title_low = ?, number = ?, "
 		+ " subject_id = ?, aspect_id = ?, type_id = ?, date = ?, status = ?, count_all = ?,"

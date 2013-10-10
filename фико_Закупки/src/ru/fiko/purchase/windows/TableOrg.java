@@ -38,6 +38,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import ru.fiko.purchase.Constant;
 import ru.fiko.purchase.Main;
 import ru.fiko.purchase.supports.CheckListItem;
 import ru.fiko.purchase.supports.CheckListRenderer;
@@ -174,7 +175,7 @@ public class TableOrg extends JPanel {
 
 	checklist = new Vector<CheckListItem>();
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	Statement stat = conn.createStatement();
 	ResultSet rs_type_of_org = stat
@@ -230,7 +231,7 @@ public class TableOrg extends JPanel {
 	    }
 	});
 
-	reg_box = new JComboBox(Main.registr_items);
+	reg_box = new JComboBox(Constant.registr_items);
 	reg_box.setToolTipText("Регистрация на ООС");
 	/**
 	 * Выставляет флаг фильтра по организации в true.<br>
@@ -398,7 +399,7 @@ public class TableOrg extends JPanel {
 				     */
 				    Connection conn = DriverManager
 					    .getConnection("jdbc:sqlite:"
-						    + Main.PATHTODB);
+						    + Constant.PATHTODB);
 				    Statement stat = conn.createStatement();
 
 				    stat.executeUpdate("DELETE FROM organization WHERE id = '"
@@ -478,7 +479,7 @@ public class TableOrg extends JPanel {
 		    try {
 			Connection conn = DriverManager
 				.getConnection("jdbc:sqlite:"
-					+ Main.PATHTODB);
+					+ Constant.PATHTODB);
 
 			Statement stat2 = conn.createStatement();
 
@@ -558,9 +559,25 @@ public class TableOrg extends JPanel {
 		openSettings();
 	    }
 	});
+	
+	JButton btn_sta = new JButton("Статистика");
+	btn_sta.addActionListener(new ActionListener() {
 
-	JPanel buttons = new JPanel(new GridLayout(1, 2));
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		try {
+		    purchase223FZ.setPanelStatistics();
+		} catch (SQLException e1) {
+		    e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+		    e1.printStackTrace();
+		}
+	    }
+	});
+
+	JPanel buttons = new JPanel(new GridLayout(1, 3));
 	buttons.add(btn_settings);
+	buttons.add(btn_sta);
 	buttons.add(btn_add_org);
 
 	this.setLayout(new BorderLayout());
@@ -584,9 +601,38 @@ public class TableOrg extends JPanel {
      * @throws SQLException
      */
     public void updateTable() throws SQLException {
+	
+	/**
+	 * Настройки таблицы
+	 */
+	Vector<String> header = new Vector<String>();
+	header.add("id");
+	header.add("ИНН");
+	header.add("Наименование организации");
 
+	DefaultTableModel dtm = (DefaultTableModel) org_table.getModel();
+	dtm.setDataVector(getValues(), header);
+
+	TableColumnModel colModel = org_table.getColumnModel();
+
+	/**
+	 * Скрытие колонки с id, т.к. нафиг её не нужно видеть пользователю
+	 */
+	colModel.getColumn(0).setMaxWidth(0);
+	colModel.getColumn(0).setMinWidth(0);
+	colModel.getColumn(0).setPreferredWidth(0);
+
+	/**
+	 * Настройка ширины колонки с ИНН
+	 */
+	colModel.getColumn(1).setMaxWidth(250);
+	colModel.getColumn(1).setMinWidth(90);
+
+    }
+    
+    public Vector<Vector<String>> getValues() throws SQLException{
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	/**
 	 * Хранит данные, для внесения в таблицу
@@ -671,33 +717,8 @@ public class TableOrg extends JPanel {
 	rs_org.close();
 	stat_org.close();
 	conn.close();
-
-	/**
-	 * Настройки таблицы
-	 */
-	Vector<String> header = new Vector<String>();
-	header.add("id");
-	header.add("ИНН");
-	header.add("Наименование организации");
-
-	DefaultTableModel dtm = (DefaultTableModel) org_table.getModel();
-	dtm.setDataVector(values, header);
-
-	TableColumnModel colModel = org_table.getColumnModel();
-
-	/**
-	 * Скрытие колонки с id, т.к. нафиг её не нужно видеть пользователю
-	 */
-	colModel.getColumn(0).setMaxWidth(0);
-	colModel.getColumn(0).setMinWidth(0);
-	colModel.getColumn(0).setPreferredWidth(0);
-
-	/**
-	 * Настройка ширины колонки с ИНН
-	 */
-	colModel.getColumn(1).setMaxWidth(250);
-	colModel.getColumn(1).setMinWidth(90);
-
+	
+	return values;
     }
 
     /**

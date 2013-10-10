@@ -16,11 +16,10 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import ru.fiko.purchase.supports.ComboItemBooleanValue;
-import ru.fiko.purchase.supports.ComboItemIntValue;
-import ru.fiko.purchase.windows.Organization;
+import ru.fiko.purchase.windows.Statistics;
 import ru.fiko.purchase.windows.TableOrg;
 import ru.fiko.purchase.windows.Settings;
+import ru.fiko.purchase.windows.organization.Organization;
 
 public class Main extends JFrame {
 
@@ -34,90 +33,7 @@ public class Main extends JFrame {
 
     private TableOrg searchOrg;
     private Organization organization;
-
-    /**
-     * Путь к распложению базы данных
-     */
-    public static String PATHTODB = "purchase.db";
-
-    /**
-     * Принадлежность к видам юридическиз лиц, определенных в ч. 2 статьи 1
-     * Закона 223-ФЗ<br>
-     * <br>
-     * !!! Предупреждение: используется только при создание бд!
-     */
-    private static String[] type_of_org_title = {
-	    "Государственная корпорация",
-	    "Государственная компания",
-	    "Субъект естественной монополии",
-	    "4",
-	    "5",
-	    "6",
-	    "7",
-	    "8",
-	    "9",
-	    "10",
-	    "11",
-	    "12",
-	    "13",
-	    "14" };
-
-    /**
-     * Cпособы размещения заказа<br>
-     * <br>
-     * !!! Предупреждение: используется только при создание бд!
-     */
-    private static String[] aspect_title = {
-	    "",
-	    "Закупка у единственного поставщика (исполнителя, подрядчика)",
-	    "Запрос котировок",
-	    "Запрос предложений",
-	    "Запрос цен",
-	    "Открытый аукцион",
-	    "Открытый аукцион в электронной форме",
-	    "Открытый конкурс" };
-
-    /**
-     * Классификация закупки<br>
-     * <br>
-     * !!! Предупреждение: используется только при создание бд!
-     */
-    private static String[] type_title = { "", "Товары", "Услуги", "Работа", };
-
-    /**
-     * Предмет закупки<br>
-     * <br>
-     * !!! Предупреждение: используется только при создание бд!
-     */
-    private static String[] subject_title = {
-	    "",
-	    "Медоборудование",
-	    "Капитальные работы",
-	    "Компьютерная техника",
-	    "Проектные работы",
-	    "Продукт питания"};
-
-    /**
-     * Список возможных статусов регистриации организации
-     */
-    public static Object[] registr_items = {
-	    new ComboItemBooleanValue(true, "Зарегистрирована"),
-	    new ComboItemBooleanValue(false, "Не зарегистрирована") };
-
-    /**
-     * Список возможных статусов закупки
-     */
-    public static Object[] status_items = {
-	    new ComboItemIntValue(0, "Состоялся"),
-	    new ComboItemIntValue(1, "1 участник"),
-	    new ComboItemIntValue(2, "Нет заявок") };
-
-    /**
-     * Список возможных статусов договора
-     */
-    public static Object[] dogovor_items = {
-	    new ComboItemBooleanValue(true, "Заключен"),
-	    new ComboItemBooleanValue(false, "Не заключен") };
+//    private Statistics statistics;
 
     public Main() throws SQLException, ClassNotFoundException {
 	/*
@@ -135,7 +51,7 @@ public class Main extends JFrame {
 	this.setVisible(true);
 
 	/*
-	 * ssssss Уничтожение процесса после закрытия окна
+	 * Уничтожение процесса после закрытия окна
 	 */
 	this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	this.addWindowListener(new WindowAdapter() {
@@ -164,7 +80,7 @@ public class Main extends JFrame {
 	 */
 	Class.forName("org.sqlite.JDBC");
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	Statement stat = conn.createStatement();
 
@@ -197,9 +113,15 @@ public class Main extends JFrame {
 	/**
 	 * Отчет
 	 */
-	stat.executeUpdate("CREATE TABLE IF NOT EXISTS day_d(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
-		+ "organization_id INTEGER, month STRING, year STRING, count_dogovors INTEGER, summa STRING);");
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS report(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		+ "organization_id INTEGER, report_type_id INTEGER, month INTEGER, year STRING, count_dogovors INTEGER, summa STRING);");
 
+	/**
+	 * Вид отчета
+	 */
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS report_type(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, title STRING);");
+
+	
 	/**
 	 * Предмет закупки
 	 */
@@ -230,6 +152,17 @@ public class Main extends JFrame {
 	    PreparedStatement pst = conn
 		    .prepareStatement("INSERT INTO type_of_org VALUES (?, ?);");
 
+	    /**
+	     * Принадлежность к видам юридическиз лиц, определенных в ч. 2
+	     * статьи 1 Закона 223-ФЗ<br>
+	     * <br>
+	     * !!! Предупреждение: используется только при создание бд!
+	     */
+	    String[] type_of_org_title = {
+		    "Государственная корпорация",
+		    "Государственная компания",
+		    "Субъект естественной монополии" };
+
 	    for (String title : type_of_org_title) {
 		pst.setString(2, title);
 		pst.addBatch();
@@ -248,6 +181,21 @@ public class Main extends JFrame {
 	if (!test_aspect.next()) {
 	    PreparedStatement pst = conn
 		    .prepareStatement("INSERT INTO aspect VALUES (?, ?);");
+
+	    /**
+	     * Cпособы размещения заказа<br>
+	     * <br>
+	     * !!! Предупреждение: используется только при создание бд!
+	     */
+	    String[] aspect_title = {
+		    "",
+		    "Закупка у единственного поставщика (исполнителя, подрядчика)",
+		    "Запрос котировок",
+		    "Запрос предложений",
+		    "Запрос цен",
+		    "Открытый аукцион",
+		    "Открытый аукцион в электронной форме",
+		    "Открытый конкурс" };
 
 	    for (String title : aspect_title) {
 		pst.setString(2, title);
@@ -268,6 +216,13 @@ public class Main extends JFrame {
 	    PreparedStatement pst = conn
 		    .prepareStatement("INSERT INTO type VALUES (?, ?);");
 
+	    /**
+	     * Классификация закупки<br>
+	     * <br>
+	     * !!! Предупреждение: используется только при создание бд!
+	     */
+	    String[] type_title = { "", "Товары", "Услуги", "Работа", };
+
 	    for (String title : type_title) {
 		pst.setString(2, title);
 		pst.addBatch();
@@ -287,6 +242,19 @@ public class Main extends JFrame {
 	    PreparedStatement pst = conn
 		    .prepareStatement("INSERT INTO subject VALUES (?, ?);");
 
+	    /**
+	     * Предмет закупки<br>
+	     * <br>
+	     * !!! Предупреждение: используется только при создание бд!
+	     */
+	    String[] subject_title = {
+		    "",
+		    "Медоборудование",
+		    "Капитальные работы",
+		    "Компьютерная техника",
+		    "Проектные работы",
+		    "Продукт питания" };
+
 	    for (String title : subject_title) {
 		pst.setString(2, title);
 		pst.addBatch();
@@ -296,6 +264,35 @@ public class Main extends JFrame {
 	}
 
 	test_subject.close();
+	
+	/**
+	 * Предмет закупки
+	 */
+	ResultSet test_report = stat.executeQuery("SELECT * FROM report_type");
+
+	if (!test_report.next()) {
+	    PreparedStatement pst = conn
+		    .prepareStatement("INSERT INTO report_type VALUES (?, ?);");
+
+	    /**
+	     * Предмет закупки<br>
+	     * <br>
+	     * !!! Предупреждение: используется только при создание бд!
+	     */
+	    String[] subject_title = {
+		    "Договоры по результатам закупок",
+		    "Договоры по рез. закупок у единственного поставщика",
+		    "Договоры по рез. закупки(гос. тайна)" };
+
+	    for (String title : subject_title) {
+		pst.setString(2, title);
+		pst.addBatch();
+	    }
+	    pst.executeBatch();
+	    pst.close();
+	}
+
+	test_report.close();
 
 	stat.close();
 	conn.close();
@@ -313,6 +310,15 @@ public class Main extends JFrame {
 	this.validate();
 	this.repaint();
     }
+    
+    public void setPanelStatistics() throws SQLException, ClassNotFoundException {
+   	this.getContentPane().removeAll();
+
+
+   	this.getContentPane().add(new Statistics(this));
+   	this.validate();
+   	this.repaint();
+       }
 
     public void updateSearchOrgTable() throws SQLException {
 	if (searchOrg != null)

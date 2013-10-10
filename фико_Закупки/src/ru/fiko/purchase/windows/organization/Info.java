@@ -31,11 +31,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
-import ru.fiko.purchase.Main;
+import ru.fiko.purchase.Constant;
 import ru.fiko.purchase.supports.CheckListItem;
 import ru.fiko.purchase.supports.CheckListRenderer;
 import ru.fiko.purchase.supports.ComboItemBooleanValue;
-import ru.fiko.purchase.windows.Organization;
 
 public class Info extends JPanel {
 
@@ -62,7 +61,7 @@ public class Info extends JPanel {
     /**
      * Компонент профиля. Состояние регистрации организации.
      */
-    private JComboBox reg_box = new JComboBox(Main.registr_items);
+    private JComboBox reg_box = new JComboBox(Constant.registr_items);
 
     /**
      * Компонент профиля. Строка с положением о закупке по ООС.
@@ -119,7 +118,7 @@ public class Info extends JPanel {
     private void getInfoFromBD() throws SQLException {
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	Statement stat = conn.createStatement();
 	ResultSet rs_org = stat
@@ -139,9 +138,9 @@ public class Info extends JPanel {
 
 	    // Состояние регистрации организации
 	    if (rs_org.getString("regist").equals("true"))
-		reg_box.setSelectedItem(Main.registr_items[0]);
+		reg_box.setSelectedItem(Constant.registr_items[0]);
 	    else
-		reg_box.setSelectedItem(Main.registr_items[1]);
+		reg_box.setSelectedItem(Constant.registr_items[1]);
 
 	} else {
 	    /**
@@ -415,7 +414,7 @@ public class Info extends JPanel {
 		.getValue();
 
 	Connection conn = DriverManager.getConnection("jdbc:sqlite:"
-		+ Main.PATHTODB);
+		+ Constant.PATHTODB);
 
 	Statement stat = conn.createStatement();
 	

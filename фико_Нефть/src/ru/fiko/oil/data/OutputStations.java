@@ -194,65 +194,72 @@ public class OutputStations {
 	     * станция, которые отражают розницу по Калуги или области(их не
 	     * надо включать в свод)
 	     */
-	    while (rs_stations.next()
-		    && rs_stations.getString("active").equals("true")) {
+	    while (rs_stations.next()) {
 
-		sheet.addCell(new Label(column, row, rs_stations
-			.getString("title"), font.tahomaStation));
+		if (rs_stations.getString("active").equals("true")) {
 
-		sheet.addCell(new Label(column + 1, row, rs_stations
-			.getString("address"), font.tahomaStation));
+		    sheet.addCell(new Label(column, row, rs_stations
+			    .getString("title"), font.tahomaStation));
 
-		int station_id = rs_stations.getInt("id");
+		    sheet.addCell(new Label(column + 1, row, rs_stations
+			    .getString("address"), font.tahomaStation));
 
-		/**
-		 * Поиск максимально приближенной записи изменение цены к
-		 * необходимой дате time
-		 */
-
-		Statement stat_change = conn.createStatement();
-		ResultSet rs_change = stat_change
-			.executeQuery("SELECT * FROM change WHERE station_id LIKE '"
-				+ station_id + "';");
-
-		/**
-		 * макс значение
-		 */
-		Long max_time = (long) 0;
-		String b80 = "";
-		String b92 = "";
-		String b95 = "";
-		String bdis = "";
-
-		while (rs_change.next()) {
-		    Long temp = Long.parseLong(rs_change
-			    .getString("changedate"));
+		    int station_id = rs_stations.getInt("id");
 
 		    /**
-		     * <= - т.к. time установлен на последнюю секунды
-		     * дня(23:59:59)
+		     * Поиск максимально приближенной записи изменение цены к
+		     * необходимой дате time
 		     */
-		    if (temp > max_time && temp <= time.getTime()) {
-			max_time = temp;
-			b80 = rs_change.getString("b80");
-			b92 = rs_change.getString("b92");
-			b95 = rs_change.getString("b95");
-			bdis = rs_change.getString("bdis");
+
+		    Statement stat_change = conn.createStatement();
+		    ResultSet rs_change = stat_change
+			    .executeQuery("SELECT * FROM change WHERE station_id LIKE '"
+				    + station_id + "';");
+
+		    /**
+		     * макс значение
+		     */
+		    Long max_time = (long) 0;
+		    String b80 = "";
+		    String b92 = "";
+		    String b95 = "";
+		    String bdis = "";
+
+		    while (rs_change.next()) {
+			Long temp = Long.parseLong(rs_change
+				.getString("changedate"));
+
+			/**
+			 * <= - т.к. time установлен на последнюю секунды
+			 * дня(23:59:59)
+			 */
+			if (temp > max_time && temp <= time.getTime()) {
+			    max_time = temp;
+			    b80 = rs_change.getString("b80");
+			    b92 = rs_change.getString("b92");
+			    b95 = rs_change.getString("b95");
+			    bdis = rs_change.getString("bdis");
+			}
 		    }
+		    rs_change.close();
+		    stat_change.close();
+
+		    /**
+		     * Запись в документ данных максимально приближенных к дате
+		     * time
+		     */
+
+		    sheet.addCell(new Label(column + 2, row, b80,
+			    font.tahomaValue));
+		    sheet.addCell(new Label(column + 3, row, b92,
+			    font.tahomaValue));
+		    sheet.addCell(new Label(column + 4, row, b95,
+			    font.tahomaValue));
+		    sheet.addCell(new Label(column + 5, row, bdis,
+			    font.tahomaValue));
+
+		    sheet.setRowView(row++, 450);
 		}
-		rs_change.close();
-		stat_change.close();
-
-		/**
-		 * Запись в документ данных максимально приближенных к дате time
-		 */
-
-		sheet.addCell(new Label(column + 2, row, b80, font.tahomaValue));
-		sheet.addCell(new Label(column + 3, row, b92, font.tahomaValue));
-		sheet.addCell(new Label(column + 4, row, b95, font.tahomaValue));
-		sheet.addCell(new Label(column + 5, row, bdis, font.tahomaValue));
-
-		sheet.setRowView(row++, 450);
 	    }
 	    rs_stations.close();
 	    stat_stations.close();

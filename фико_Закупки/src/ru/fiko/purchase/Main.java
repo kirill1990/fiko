@@ -16,7 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import ru.fiko.purchase.windows.Statistics;
+import ru.fiko.purchase.windows.Reports;
 import ru.fiko.purchase.windows.TableOrg;
 import ru.fiko.purchase.windows.Settings;
 import ru.fiko.purchase.windows.organization.Organization;
@@ -315,7 +315,7 @@ public class Main extends JFrame {
    	this.getContentPane().removeAll();
 
 
-   	this.getContentPane().add(new Statistics(this));
+   	this.getContentPane().add(new Reports(this));
    	this.validate();
    	this.repaint();
        }

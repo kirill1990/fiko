@@ -447,7 +447,7 @@ public class Filter extends JPanel {
 		    continue NEXT;
 	    }
 
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd.yyyy");
 	    Date date = new Date(Long.parseLong(rs_purchase.getString("date")));
 
 	    Vector<String> el = new Vector<String>();

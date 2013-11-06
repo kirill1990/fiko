@@ -286,7 +286,7 @@ public class Year {
 			    switch (month_index) {
 			    case 0:
 				/**
-				 * Первые месяц с предедушем не складывается
+				 * Первые месяц с предыдушем не складывается
 				 */
 				formulaV = toColumnExcel(month_index * 4
 					+ formula_num)

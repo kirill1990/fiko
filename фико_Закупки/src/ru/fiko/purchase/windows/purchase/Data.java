@@ -130,8 +130,8 @@ public class Data extends JFrame {
      */
     private JButton save;
 
-    public Data(int purchase_id, Purchases purchases)
-	    throws SQLException, ClassNotFoundException {
+    public Data(int purchase_id, Purchases purchases) throws SQLException,
+	    ClassNotFoundException {
 	this.purchase_id = purchase_id;
 	this.purchases = purchases;
 
@@ -249,21 +249,22 @@ public class Data extends JFrame {
 	aspect.setToolTipText("Способ размещения заказа");
 	aspect.addActionListener(new ListenerEnabledSaveBtn());
 	aspect.addActionListener(new ActionListener() {
-	    
+
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		JComboBox aspect = (JComboBox) arg0.getSource();
-		
-		ComboItemIntValue value = (ComboItemIntValue)aspect.getSelectedItem();
-		if(value.getValue() ==2){
+
+		ComboItemIntValue value = (ComboItemIntValue) aspect
+			.getSelectedItem();
+		if (value.getValue() == 2) {
 		    status.setSelectedIndex(0);
 		    count_do.setValue(1);
 		    count_all.setValue(1);
 		    dogovor.setSelectedIndex(0);
-		    
+
 		    torgi_finish_cost.setValue(torgi_start_cost.getValue());
 		}
-		
+
 	    }
 	});
 
@@ -772,7 +773,7 @@ public class Data extends JFrame {
 	preparedStmt.close();
 
 	conn.close();
-	purchases.updateTable();
+//	purchases.updateTable();
 
 	econom.setText(getEconom(
 		Double.parseDouble(torgi_start_cost.getValue().toString()),

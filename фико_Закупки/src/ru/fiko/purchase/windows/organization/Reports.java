@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import javax.swing.BoxLayout;
@@ -206,15 +208,16 @@ public class Reports extends JPanel {
 				+ rs.getInt("report_type_id") + "'");
 		if (rs3.next()) {
 		    all_dogovor += rs3.getInt("count_dogovors");
-		    
+
 		    Double sum = Double.parseDouble(rs3.getString("summa"));
 		    all_sum = all_sum.add(new BigDecimal(sum));
-		    all_sum= all_sum.divide(BigDecimal.ONE).setScale(2, RoundingMode.HALF_UP);
+		    all_sum = all_sum.divide(BigDecimal.ONE).setScale(2,
+			    RoundingMode.HALF_UP);
 		}
 
 		rs3.close();
 
-		if(((ComboItemIntValue) m).getValue()==month)
+		if (((ComboItemIntValue) m).getValue() == month)
 		    break;
 	    }
 	    stat3.close();
@@ -247,7 +250,8 @@ public class Reports extends JPanel {
 	    JPanel p22 = new JPanel(new BorderLayout(5, 5));
 	    p22.add(new JLabel("Общее количество договоров: "),
 		    BorderLayout.WEST);
-	    p22.add(new JLabel(Long.toString(all_dogovor)+"  "), BorderLayout.CENTER);
+	    p22.add(new JLabel(Long.toString(all_dogovor) + "  "),
+		    BorderLayout.CENTER);
 
 	    JPanel p33 = new JPanel(new BorderLayout(5, 5));
 	    p33.add(p11, BorderLayout.WEST);
@@ -289,6 +293,16 @@ public class Reports extends JPanel {
 
 	year = new JComboBox(Constant.year_items);
 	month = new JComboBox(Constant.month_items);
+
+	SimpleDateFormat dateFormat = new SimpleDateFormat("MM");
+	Date date = new Date(System.currentTimeMillis());
+
+	int mon = Integer.parseInt(dateFormat.format(date)) - 2;
+	if (mon < 0)
+	    mon = 12 + mon;
+
+	month.setSelectedIndex(mon);
+
 	year.addActionListener(new ListenerChange());
 	month.addActionListener(new ListenerChange());
 

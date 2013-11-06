@@ -18,6 +18,7 @@
 	<!-- Наименование внешних библиотек -->
 	<property name="jcalendar" value="jcalendar*.jar" />
 	<property name="sqlite" value="sqlite*.jar" />
+	<property name="jxl" value="jxl.jar" />
 
 	<!-- ClassPath к внешним библиотекам-->
 	<path id="lib.class.path">
@@ -26,6 +27,7 @@
 			<include name="sqlite*.jar" />
 			<include name="junit*.jar" />
 			<include name="hamcrest*.jar" />
+			<include name="jxl.jar" />
 		</fileset>
 	</path>
 
@@ -65,6 +67,7 @@
 			</manifest>
 			<zipgroupfileset dir="${lib.dir}" includes="${jcalendar}" />
 			<zipgroupfileset dir="${lib.dir}" includes="${sqlite}" />
+			<zipgroupfileset dir="${lib.dir}" includes="${jxl}" />
 		</jar>
 	</target>
 

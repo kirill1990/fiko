@@ -17,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -40,6 +41,8 @@ import javax.swing.table.TableColumnModel;
 
 import ru.fiko.purchase.Constant;
 import ru.fiko.purchase.Main;
+import ru.fiko.purchase.reports.Number3or4;
+import ru.fiko.purchase.reports.Number5;
 import ru.fiko.purchase.supports.CheckListItem;
 import ru.fiko.purchase.supports.CheckListRenderer;
 import ru.fiko.purchase.supports.ComboItemBooleanValue;
@@ -428,11 +431,74 @@ public class TableOrg extends JPanel {
 			    }
 			}
 		    });
+		    
+		    JMenuItem num3 = new JMenuItem("Отчет №3");
+		    num3.addActionListener(new ActionListener() {
+		        
+		        @Override
+		        public void actionPerformed(ActionEvent arg0) {
+		            Vector<Integer> result = new Vector<Integer>();
+		            for (int index : target.getSelectedRows()) {
+
+				/**
+				 * id удаляемой организации
+				 */
+				int id = Integer.parseInt(target.getValueAt(
+					index, 0).toString());
+				result.add(id);
+		            }
+		            
+		            new Number3or4(new Date(System.currentTimeMillis()), 3, result);
+		        }
+		    });
+		    
+		    JMenuItem num4 = new JMenuItem("Отчет №4");
+		    num4.addActionListener(new ActionListener() {
+		        
+		        @Override
+		        public void actionPerformed(ActionEvent arg0) {
+		            Vector<Integer> result = new Vector<Integer>();
+		            for (int index : target.getSelectedRows()) {
+
+				/**
+				 * id удаляемой организации
+				 */
+				int id = Integer.parseInt(target.getValueAt(
+					index, 0).toString());
+				result.add(id);
+		            }
+		            
+		            new Number3or4(new Date(System.currentTimeMillis()), 4, result);
+		        }
+		    });
+		    
+		    JMenuItem num5 = new JMenuItem("Отчет №5");
+		    num5.addActionListener(new ActionListener() {
+		        
+		        @Override
+		        public void actionPerformed(ActionEvent arg0) {
+		            Vector<Integer> result = new Vector<Integer>();
+		            for (int index : target.getSelectedRows()) {
+
+				/**
+				 * id удаляемой организации
+				 */
+				int id = Integer.parseInt(target.getValueAt(
+					index, 0).toString());
+				result.add(id);
+		            }
+		            
+		            new Number5(new Date(System.currentTimeMillis()), result);
+		        }
+		    });
 
 		    JPopupMenu popup = new JPopupMenu();
 
 		    popup.add(title);
 		    popup.add(inn);
+		    popup.add(num3);
+		    popup.add(num4);
+		    popup.add(num5);
 
 		    if (target.getSelectedRows().length == 1) {
 			popup.add(open);

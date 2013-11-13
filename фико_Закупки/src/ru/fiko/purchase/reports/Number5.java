@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
@@ -33,10 +34,16 @@ public class Number5 {
 
     int year = 2013;
     int month = 0;
+
+    Vector<Integer> org_ids;
+
     Date date_finish = new Date(System.currentTimeMillis());
     Date date_start = new Date(System.currentTimeMillis());
 
-    public Number5(Date date) {
+    @SuppressWarnings("unchecked")
+    public Number5(Date date, Vector<Integer> ids) {
+
+	org_ids = (Vector<Integer>) ids.clone();
 
 	SimpleDateFormat formatter = new SimpleDateFormat("dd.MMMM.yyyy");
 	SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy");
@@ -55,11 +62,9 @@ public class Number5 {
 	} catch (ParseException e1) {
 	    e1.printStackTrace();
 	}
-	
-	year = Integer.parseInt(formatter2.format(date));
-	month = Integer.parseInt(formatter3.format(date)) -1;
 
-	
+	year = Integer.parseInt(formatter2.format(date));
+	month = Integer.parseInt(formatter3.format(date)) - 1;
 
 	try {
 	    create();
@@ -124,156 +129,169 @@ public class Number5 {
 	row++;
 	int org_count = 1;
 
-	Statement stat = conn.createStatement();
-	ResultSet org = stat.executeQuery("SELECT * FROM organization");
-	while (org.next()) {
+	for (int id : org_ids) {
 
-	    int thisRow = row + org_count;
-	    int org_id = org.getInt("id");
+	    Statement stat = conn.createStatement();
+	    ResultSet org = stat
+		    .executeQuery("SELECT * FROM organization WHERE id LIKE '"
+			    + +id + "'");
+	    while (org.next()) {
 
-	    String org_name = org.getString("name");
-	    String org_inn = org.getString("inn");
+		int thisRow = row + org_count;
+		int org_id = org.getInt("id");
 
-	    if (org_name.length() > 55)
-		sheet.setRowView(thisRow, 900);
-	    else
-		sheet.setRowView(thisRow, 450);
+		String org_name = org.getString("name");
+		String org_inn = org.getString("inn");
 
-	    sheet.addCell(new Label(column, thisRow, Integer
-		    .toString(org_count), font.tahomaValue2));
+		if (org_name.length() > 55)
+		    sheet.setRowView(thisRow, 900);
+		else
+		    sheet.setRowView(thisRow, 450);
 
-	    sheet.addCell(new Label(column + 1, thisRow, org_name,
-		    font.tahomaValue2));
+		sheet.addCell(new Label(column, thisRow, Integer
+			.toString(org_count), font.tahomaValue2));
 
-	    sheet.addCell(new Label(column + 2, thisRow, org_inn,
-		    font.tahomaValue2));
+		sheet.addCell(new Label(column + 1, thisRow, org_name,
+			font.tahomaValue2));
 
-	    String type_of_org = "";
+		sheet.addCell(new Label(column + 2, thisRow, org_inn,
+			font.tahomaValue2));
 
-	    Statement stat2 = conn.createStatement();
-	    ResultSet t = stat2
-		    .executeQuery("SELECT * FROM types_of_org WHERE organization_id LIKE '"
-			    + org_id + "'");
+		String type_of_org = "";
 
-	    while (t.next()) {
+		Statement stat2 = conn.createStatement();
+		ResultSet t = stat2
+			.executeQuery("SELECT * FROM types_of_org WHERE organization_id LIKE '"
+				+ org_id + "'");
+
+		while (t.next()) {
+		    Statement stat3 = conn.createStatement();
+		    ResultSet t2 = stat3
+			    .executeQuery("SELECT * FROM type_of_org WHERE id LIKE '"
+				    + t.getString("type_of_org_id") + "'");
+		    while (t2.next()) {
+			type_of_org += t2.getString("title") + "; ";
+		    }
+
+		    t2.close();
+		    stat3.close();
+		}
+
+		t.close();
+		stat2.close();
+
+		sheet.addCell(new Label(column + 3, thisRow, type_of_org,
+			font.tahomaValue2));
+
+		String regist = "Зарегистрирована";
+		if (org.getString("regist").equals("false"))
+		    regist = "Не зарегистрирована";
+
+		sheet.addCell(new Label(column + 4, thisRow, regist,
+			font.tahomaValue2));
+
+		sheet.addCell(new Label(column + 5, thisRow, org
+			.getString("polojen_ooc"), font.tahomaValue2));
+
+		sheet.addCell(new Label(column + 6, thisRow, "",
+			font.tahomaValue2));
+
+		Double count = 0.0;
+		BigDecimal start = BigDecimal.ZERO;
+		BigDecimal finish = BigDecimal.ZERO;
+
 		Statement stat3 = conn.createStatement();
-		ResultSet t2 = stat3
-			.executeQuery("SELECT * FROM type_of_org WHERE id LIKE '"
-				+ t.getString("type_of_org_id") + "'");
-		while (t2.next()) {
-		    type_of_org += t2.getString("title") + "; ";
+		ResultSet pur = stat3
+			.executeQuery("SELECT * FROM purchase WHERE organization_id LIKE '"
+				+ org_id + "'");
+
+		NextPurchase: while (pur.next()) {
+
+		    long time = Long.parseLong(pur.getString("date"));
+		    Date thisDate = new Date(time);
+
+		    if (thisDate.after(date_finish)
+			    && thisDate.before(date_start))
+			continue NextPurchase;
+
+		    if (pur.getString("dogovor").equals("false"))
+			continue NextPurchase;
+
+		    BigDecimal st = BigDecimal.valueOf(Double.parseDouble(pur
+			    .getString("torgi_start_cost")));
+		    BigDecimal fn = BigDecimal.valueOf(Double.parseDouble(pur
+			    .getString("torgi_finish_cost")));
+
+		    if (st.doubleValue() < 0.010)
+			continue NextPurchase;
+
+		    start = start.add(st);
+		    finish = finish.add(fn);
+		    count++;
 		}
 
-		t2.close();
+		pur.close();
 		stat3.close();
-	    }
 
-	    t.close();
-	    stat2.close();
+		sheet.addCell(new Number(column + 7, thisRow, count,
+			font.tahomaValue3));
 
-	    sheet.addCell(new Label(column + 3, thisRow, type_of_org,
-		    font.tahomaValue2));
+		sheet.addCell(new Number(column + 8, thisRow, start
+			.doubleValue(), font.tahomaValue2));
 
-	    String regist = "Зарегистрирована";
-	    if (org.getString("regist").equals("false"))
-		regist = "Не зарегистрирована";
+		sheet.addCell(new Number(column + 9, thisRow, finish
+			.doubleValue(), font.tahomaValue2));
 
-	    sheet.addCell(new Label(column + 4, thisRow, regist,
-		    font.tahomaValue2));
+		sheet.addCell(new Formula(column + 10, thisRow, ""
+			+ getColumnExcel(column + 8)
+			+ Integer.toString(thisRow + 1) + " - "
+			+ getColumnExcel(column + 9)
+			+ Integer.toString(thisRow + 1) + "", font.tahomaValue2));
 
-	    sheet.addCell(new Label(column + 5, thisRow, org
-		    .getString("polojen_ooc"), font.tahomaValue2));
+		long dogovor = 0;
+		BigDecimal all_sum = BigDecimal.ZERO;
 
-	    sheet.addCell(new Label(column + 6, thisRow, "", font.tahomaValue2));
+		Object[] obj = Constant.month_items;
 
-	    Double count = 0.0;
-	    BigDecimal start = BigDecimal.ZERO;
-	    BigDecimal finish = BigDecimal.ZERO;
+		for (Object m : obj) {
 
-	    Statement stat3 = conn.createStatement();
-	    ResultSet pur = stat3
-		    .executeQuery("SELECT * FROM purchase WHERE organization_id LIKE '"
-			    + org_id + "'");
+		    // System.out.println(((ComboItemIntValue) m).getValue());
 
-	    NextPurchase: while (pur.next()) {
+		    Statement stat4 = conn.createStatement();
+		    ResultSet rs = stat4
+			    .executeQuery("SELECT * FROM report WHERE report_type_id LIKE '1' AND month LIKE '"
+				    + ((ComboItemIntValue) m).getValue()
+				    + "' AND year LIKE '"
+				    + this.year
+				    + "' AND organization_id LIKE '"
+				    + org_id
+				    + "'");
 
-		long time = Long.parseLong(pur.getString("date"));
-		Date thisDate = new Date(time);
+		    while (rs.next()) {
+			dogovor += rs.getInt("count_dogovors");
 
-		if (thisDate.after(date_finish) && thisDate.before(date_start))
-		    continue NextPurchase;
+			Double sum = Double.parseDouble(rs.getString("summa"));
+			all_sum = all_sum.add(new BigDecimal(sum));
+			all_sum = all_sum.divide(BigDecimal.ONE).setScale(2,
+				RoundingMode.HALF_UP);
+		    }
 
-		BigDecimal st = BigDecimal.valueOf(Double.parseDouble(pur
-			.getString("torgi_start_cost")));
-		BigDecimal fn = BigDecimal.valueOf(Double.parseDouble(pur
-			.getString("torgi_finish_cost")));
+		    rs.close();
+		    stat4.close();
 
-		if (st.doubleValue() < 0.010)
-		    continue NextPurchase;
-
-		start = start.add(st);
-		finish = finish.add(fn);
-		count++;
-	    }
-
-	    pur.close();
-	    stat3.close();
-
-	    sheet.addCell(new Number(column + 7, thisRow, count,
-		    font.tahomaValue3));
-
-	    sheet.addCell(new Number(column + 8, thisRow, start.doubleValue(),
-		    font.tahomaValue2));
-
-	    sheet.addCell(new Number(column + 9, thisRow, finish.doubleValue(),
-		    font.tahomaValue2));
-
-	    sheet.addCell(new Formula(column + 10, thisRow, ""
-		    + getColumnExcel(column + 8)
-		    + Integer.toString(thisRow + 1) + " - "
-		    + getColumnExcel(column + 9)
-		    + Integer.toString(thisRow + 1) + "", font.tahomaValue2));
-
-	    long dogovor = 0;
-	    BigDecimal all_sum = BigDecimal.ZERO;
-
-	    Object[] obj = Constant.month_items;
-	    
-	    for (Object m : obj) {
-		
-//		System.out.println(((ComboItemIntValue) m).getValue());
-		
-		Statement stat4 = conn.createStatement();
-		ResultSet rs = stat4
-			.executeQuery("SELECT * FROM report WHERE report_type_id LIKE '1' AND month LIKE '"
-				+ ((ComboItemIntValue) m).getValue()
-				+ "' AND year LIKE '" + this.year + "' AND organization_id LIKE '"+org_id+"'");
-
-		while (rs.next()) {
-		    dogovor += rs.getInt("count_dogovors");
-
-		    Double sum = Double.parseDouble(rs.getString("summa"));
-		    all_sum = all_sum.add(new BigDecimal(sum));
-		    all_sum = all_sum.divide(BigDecimal.ONE).setScale(2,
-			    RoundingMode.HALF_UP);
+		    if (((ComboItemIntValue) m).getValue() == this.month)
+			break;
 		}
 
-		rs.close();
-		stat4.close();
+		sheet.addCell(new Number(column + 11, thisRow, dogovor,
+			font.tahomaValue3));
 
-		if (((ComboItemIntValue) m).getValue() == this.month)
-		    break;
+		org_count++;
 	    }
-	    
 
-	    sheet.addCell(new Number(column + 11, thisRow, dogovor,
-		    font.tahomaValue3));
-
-	    org_count++;
+	    stat.close();
+	    org.close();
 	}
-
-	stat.close();
-	org.close();
 
 	// int thisColumn = column + titles_column.length;
 	// int index = 0;

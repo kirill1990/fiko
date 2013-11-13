@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
@@ -34,16 +35,21 @@ public class Number3or4 {
 
     int year = 2013;
     int month = 0;
+    Vector<Integer> org_ids;
+
     Date date_finish = new Date(System.currentTimeMillis());
     Date date_start = new Date(System.currentTimeMillis());
-    
+
     String type = "subject";
     int number = 3;
 
-    public Number3or4(Date date, int number) {
-	
-	if(number==4){
-	    type ="type";
+    @SuppressWarnings("unchecked")
+    public Number3or4(Date date, int number, Vector<Integer> ids) {
+
+	org_ids = (Vector<Integer>) ids.clone();
+
+	if (number == 4) {
+	    type = "type";
 	    this.number = 4;
 	}
 
@@ -87,11 +93,11 @@ public class Number3or4 {
 	SimpleDateFormat formatter = new SimpleDateFormat("dd.MMMM.yyyy");
 
 	WritableWorkbook workbook = Workbook.createWorkbook(new File(dir + "/"
-		+ "Отчет №"+this.number+"("
+		+ "Отчет №" + this.number + "("
 		+ formatter.format(new Date(System.currentTimeMillis()))
 		+ ").xls"));
 
-	WritableSheet sheet = workbook.createSheet("Отчет №3", 0);
+	WritableSheet sheet = workbook.createSheet("Отчет №" + this.number, 0);
 
 	String title = "Таблица о завершенных процедурах размещения заказа для государственных нужд по видам продукции по организациям.(с сортировкой по видам организаций)"
 		+ formatter.format(this.date_finish);
@@ -120,7 +126,7 @@ public class Number3or4 {
 	Map<Integer, String> subject = new HashMap<Integer, String>();
 
 	Statement stat = conn.createStatement();
-	ResultSet rs = stat.executeQuery("SELECT * FROM "+type);
+	ResultSet rs = stat.executeQuery("SELECT * FROM " + type);
 
 	while (rs.next())
 	    subject.put(rs.getInt("id"), rs.getString("title"));
@@ -151,126 +157,135 @@ public class Number3or4 {
 	row += 2;
 	int org_count = 1;
 
-	stat = conn.createStatement();
-	ResultSet org = stat
-		.executeQuery("SELECT id, name, inn FROM organization");
-	while (org.next()) {
-	    int thisRow = row + org_count;
-	    int org_id = org.getInt("id");
-	    String org_name = org.getString("name");
-	    String org_inn = org.getString("inn");
+	for (int id : org_ids) {
 
-	    if (org_name.length() > 55)
-		sheet.setRowView(thisRow, 900);
-	    else
-		sheet.setRowView(thisRow, 450);
+	    stat = conn.createStatement();
+	    ResultSet org = stat
+		    .executeQuery("SELECT id, name, inn FROM organization WHERE id LIKE '"
+			    + id + "'");
+	    while (org.next()) {
+		int thisRow = row + org_count;
+		int org_id = org.getInt("id");
+		String org_name = org.getString("name");
+		String org_inn = org.getString("inn");
 
-	    sheet.addCell(new Label(column, thisRow, Integer
-		    .toString(org_count), font.tahomaValue2));
+		if (org_name.length() > 55)
+		    sheet.setRowView(thisRow, 900);
+		else
+		    sheet.setRowView(thisRow, 450);
 
-	    sheet.addCell(new Label(column + 1, thisRow, org_name,
-		    font.tahomaValue2));
+		sheet.addCell(new Label(column, thisRow, Integer
+			.toString(org_count), font.tahomaValue2));
 
-	    sheet.addCell(new Label(column + 2, thisRow, org_inn,
-		    font.tahomaValue2));
+		sheet.addCell(new Label(column + 1, thisRow, org_name,
+			font.tahomaValue2));
 
-	    String[] formula = new String[2];
-	    for (int index = 0; index < formula.length; index++)
-		formula[index] = "";
+		sheet.addCell(new Label(column + 2, thisRow, org_inn,
+			font.tahomaValue2));
 
-	    int thisColumn = column + titles_column.length;
-	    for (Map.Entry<Integer, String> entry : subject.entrySet()) {
-		
-		sheet.setColumnView(thisColumn+1, 20);
+		String[] formula = new String[2];
+		for (int index = 0; index < formula.length; index++)
+		    formula[index] = "";
 
-		if (entry.getKey().equals(999)) {
+		int thisColumn = column + titles_column.length;
+		for (Map.Entry<Integer, String> entry : subject.entrySet()) {
 
-		    for (int index = 0; index < formula.length; index++) {
+		    sheet.setColumnView(thisColumn + 1, 20);
 
-			WritableCellFormat thisfont = font.tahomaValue3;
-			if (index != 0)
-			    thisfont = font.tahomaValue2;
+		    if (entry.getKey().equals(999)) {
 
-			sheet.addCell(new Formula(thisColumn + index, thisRow,
-				"SUM(" + formula[index] + ")", thisfont));
-			formula[index] = "";
+			for (int index = 0; index < formula.length; index++) {
+
+			    WritableCellFormat thisfont = font.tahomaValue3;
+			    if (index != 0)
+				thisfont = font.tahomaValue2;
+
+			    sheet.addCell(new Formula(thisColumn + index,
+				    thisRow, "SUM(" + formula[index] + ")",
+				    thisfont));
+			    formula[index] = "";
+			}
+
+		    } else {
+
+			Double count = 0.0;
+			BigDecimal start = BigDecimal.ZERO;
+			BigDecimal finish = BigDecimal.ZERO;
+
+			Statement stat3 = conn.createStatement();
+			ResultSet pur = stat3
+				.executeQuery("SELECT * FROM purchase WHERE "
+					+ type + "_id LIKE '" + entry.getKey()
+					+ "' AND organization_id LIKE '"
+					+ org_id + "'");
+
+			NextPurchase: while (pur.next()) {
+
+			    long time = Long.parseLong(pur.getString("date"));
+			    Date thisDate = new Date(time);
+
+			    if (thisDate.after(date_finish)
+				    && thisDate.before(date_start))
+				continue NextPurchase;
+
+			    if (pur.getString("dogovor").equals("false"))
+				continue NextPurchase;
+
+			    BigDecimal st = BigDecimal.valueOf(Double
+				    .parseDouble(pur
+					    .getString("torgi_start_cost")));
+			    BigDecimal fn = BigDecimal.valueOf(Double
+				    .parseDouble(pur
+					    .getString("torgi_finish_cost")));
+
+			    if (st.doubleValue() < 0.010)
+				continue NextPurchase;
+
+			    start = start.add(st);
+			    finish = finish.add(fn);
+			    count++;
+			}
+
+			pur.close();
+			stat3.close();
+
+			sheet.addCell(new Number(thisColumn, thisRow, count,
+				font.tahomaValue3));
+
+			sheet.addCell(new Number(thisColumn + 1, thisRow,
+				finish.doubleValue(), font.tahomaValue2));
+
+			// sheet.addCell(new Formula(column + 4, row, ""
+			// + getColumnExcel(column + 2)
+			// + Integer.toString(row + 1) + " - "
+			// + getColumnExcel(column + 3)
+			// + Integer.toString(row + 1) + "",
+			// font.tahomaValue2));
+
+			for (int index = 0; index < formula.length; index++) {
+			    String dot = ",";
+			    if (formula[index].equals(""))
+				dot = "";
+
+			    formula[index] += dot
+				    + getColumnExcel(thisColumn + index)
+				    + Integer.toString(thisRow + 1);
+			}
 		    }
-
-		} else {
-
-		    Double count = 0.0;
-		    BigDecimal start = BigDecimal.ZERO;
-		    BigDecimal finish = BigDecimal.ZERO;
-
-		    Statement stat3 = conn.createStatement();
-		    ResultSet pur = stat3
-			    .executeQuery("SELECT * FROM purchase WHERE "+type+"_id LIKE '"
-				    + entry.getKey()
-				    + "' AND organization_id LIKE '"
-				    + org_id
-				    + "'");
-
-		    NextPurchase: while (pur.next()) {
-
-			long time = Long.parseLong(pur.getString("date"));
-			Date thisDate = new Date(time);
-
-			if (thisDate.after(date_finish)
-				&& thisDate.before(date_start))
-			    continue NextPurchase;
-
-			BigDecimal st = BigDecimal
-				.valueOf(Double.parseDouble(pur
-					.getString("torgi_start_cost")));
-			BigDecimal fn = BigDecimal
-				.valueOf(Double.parseDouble(pur
-					.getString("torgi_finish_cost")));
-
-			if (st.doubleValue() < 0.010)
-			    continue NextPurchase;
-
-			start = start.add(st);
-			finish = finish.add(fn);
-			count++;
-		    }
-
-		    pur.close();
-		    stat3.close();
-
-		    sheet.addCell(new Number(thisColumn, thisRow, count,
-			    font.tahomaValue3));
-
-		    sheet.addCell(new Number(thisColumn + 1, thisRow, finish
-			    .doubleValue(), font.tahomaValue2));
-
-		    // sheet.addCell(new Formula(column + 4, row, ""
-		    // + getColumnExcel(column + 2)
-		    // + Integer.toString(row + 1) + " - "
-		    // + getColumnExcel(column + 3)
-		    // + Integer.toString(row + 1) + "", font.tahomaValue2));
-
-		    for (int index = 0; index < formula.length; index++) {
-			String dot = ",";
-			if (formula[index].equals(""))
-			    dot = "";
-
-			formula[index] += dot
-				+ getColumnExcel(thisColumn + index)
-				+ Integer.toString(thisRow + 1);
-		    }
+		    thisColumn += 2;
 		}
-		thisColumn += 2;
+
+		org_count++;
 	    }
 
-	    org_count++;
+	    stat.close();
+	    org.close();
 	}
-
-	stat.close();
-	org.close();
 
 	int thisColumn = column + titles_column.length;
 	int index = 0;
-	for (@SuppressWarnings("unused") Map.Entry<Integer, String> entry : subject.entrySet()) {
+	for (@SuppressWarnings("unused")
+	Map.Entry<Integer, String> entry : subject.entrySet()) {
 
 	    for (int i = 0; i < 2; i++) {
 		int column_f = thisColumn + index + i;

@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -87,7 +88,7 @@ public class Reports extends JPanel {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		new Number3or4(date.getDate(), 3);
+		new Number3or4(date.getDate(), 3, getAllIDOrganization());
 	    }
 	});
 
@@ -96,7 +97,7 @@ public class Reports extends JPanel {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		new Number3or4(date.getDate(), 4);
+		new Number3or4(date.getDate(), 4, getAllIDOrganization());
 	    }
 	});
 
@@ -105,7 +106,7 @@ public class Reports extends JPanel {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		new Number5(date.getDate());
+		new Number5(date.getDate(),getAllIDOrganization());
 	    }
 	});
 
@@ -131,6 +132,34 @@ public class Reports extends JPanel {
 	panel.add(date);
 
 	return panel;
+    }
+
+    private Vector<Integer> getAllIDOrganization() {
+	Vector<Integer> result = new Vector<Integer>();
+	try {
+	    Class.forName("org.sqlite.JDBC");
+	} catch (ClassNotFoundException e) {
+	    e.printStackTrace();
+	}
+	try {
+	    Connection conn = DriverManager.getConnection("jdbc:sqlite:"
+		    + Constant.PATHTODB);
+	    
+	    Statement stat = conn.createStatement();
+	    ResultSet org = stat
+		    .executeQuery("SELECT id FROM organization");
+	    while (org.next()) {
+		result.add(org.getInt("id"));
+	    }
+	    org.close();
+	    stat.close();
+	    
+
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+	
+	return result;
     }
 
     /**
@@ -225,24 +254,21 @@ public class Reports extends JPanel {
 	p9.add(new JLabel("Количество договоров:"), BorderLayout.WEST);
 	p9.add(new JLabel(Long.toString((Long) result[13])),
 		BorderLayout.CENTER);
-	
+
 	NumberFormat paymentFormat = NumberFormat
 		.getCurrencyInstance(new Locale("RU", "ru"));
 	paymentFormat.setMinimumFractionDigits(2);
-	
-	
-	
+
 	JPanel p99 = new JPanel(new BorderLayout(5, 5));
 	p99.add(new JLabel("Сумма:                      "), BorderLayout.WEST);
-	p99.add(new JLabel(paymentFormat.format(((BigDecimal) result[14]).doubleValue())),
-		BorderLayout.CENTER);
+	p99.add(new JLabel(paymentFormat.format(((BigDecimal) result[14])
+		.doubleValue())), BorderLayout.CENTER);
 
 	JPanel p999 = new JPanel(new BorderLayout(5, 5));
 	p999.add(new JLabel("Сумма за месяц:"), BorderLayout.WEST);
-	p999.add(new JLabel(paymentFormat.format(((BigDecimal) result[15]).doubleValue())),
-		BorderLayout.CENTER);
-	
-	
+	p999.add(
+		new JLabel(paymentFormat.format(((BigDecimal) result[15])
+			.doubleValue())), BorderLayout.CENTER);
 
 	table.add(p1);
 	table.add(p2);
@@ -439,7 +465,7 @@ public class Reports extends JPanel {
 
 	for (Object m : Constant.month_items) {
 
-	     sum_month = BigDecimal.ZERO;
+	    sum_month = BigDecimal.ZERO;
 
 	    rs = stat
 		    .executeQuery("SELECT * FROM report WHERE report_type_id LIKE '1' AND month LIKE '"

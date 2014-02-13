@@ -795,7 +795,7 @@ public class Main extends JFrame
 				}
 				case 7:
 				{
-					jLabel.setText("Код по ОКПО: ");
+					jLabel.setText("Вид деятельности: ");
 					textField.setText(values.get(6).toString());
 					break;
 				}

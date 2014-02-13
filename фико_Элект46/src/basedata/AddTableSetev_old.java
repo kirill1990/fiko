@@ -18,7 +18,7 @@ import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
 
 @SuppressWarnings("rawtypes")
-public class AddTableSetev extends SwingWorker {
+public class AddTableSetev_old extends SwingWorker {
     private Sheet sheet_title = null;
     private Sheet sheet_otpusk = null;
 
@@ -111,16 +111,16 @@ public class AddTableSetev extends SwingWorker {
 
     private boolean presenceTable(File file) {
 	// Месяц
-	String month = sheet_title.getCell("G14").getContents().toLowerCase();
+	String month = sheet_title.getCell("F10").getContents().toLowerCase();
 
 	// Год
-	String year = sheet_title.getCell("G13").getContents().toLowerCase();
+	String year = sheet_title.getCell("F11").getContents().toLowerCase();
 
 	// ИНН
-	String inn = sheet_title.getCell("G17").getContents();
+	String inn = sheet_title.getCell("F15").getContents();
 
 	// Муниципальный район
-	String district = sheet_title.getCell("G21").getContents();
+	String district = sheet_title.getCell("F19").getContents();
 
 	int id = new ConnectionBD().presenceTable(month, year, inn, district);
 
@@ -192,69 +192,68 @@ public class AddTableSetev extends SwingWorker {
 	ArrayList<String> content_title = new ArrayList<String>();
 
 	// Месяц
-	content_title.add(sheet_title.getCell("G14").getContents()
+	content_title.add(sheet_title.getCell("F10").getContents()
 		.toLowerCase());
-	search += sheet_title.getCell("G14").getContents().toLowerCase() + " ";
+	search += sheet_title.getCell("F10").getContents().toLowerCase() + " ";
 
 	// Год
-	content_title.add(sheet_title.getCell("G13").getContents()
+	content_title.add(sheet_title.getCell("F11").getContents()
 		.toLowerCase());
-	search += sheet_title.getCell("G13").getContents().toLowerCase() + " ";
+	search += sheet_title.getCell("F11").getContents().toLowerCase() + " ";
 
 	// Наименование орг
-	content_title.add(sheet_title.getCell("G16").getContents());
-	search += sheet_title.getCell("G16").getContents().toLowerCase() + " ";
+	content_title.add(sheet_title.getCell("F13").getContents());
+	search += sheet_title.getCell("F13").getContents().toLowerCase() + " ";
 
 	// ИНН
-	content_title.add(sheet_title.getCell("G17").getContents());
+	content_title.add(sheet_title.getCell("F15").getContents());
 
 	// КПП
-	content_title.add(sheet_title.getCell("G18").getContents());
+	content_title.add(sheet_title.getCell("F16").getContents());
 
-	// Вид деятельности
-	content_title.add(sheet_title.getCell("G19").getContents());
-//	content_title.add("-");
+	// ОКПО
+	content_title.add(sheet_title.getCell("F17").getContents());
 
 	// Муниципальный район
-	content_title.add(sheet_title.getCell("G21").getContents());
-	search += sheet_title.getCell("G21").getContents().toLowerCase() + " ";
+	content_title.add(sheet_title.getCell("F19").getContents());
+	search += sheet_title.getCell("F19").getContents().toLowerCase() + " ";
 
 	// Муниципальное образование
-	content_title.add(sheet_title.getCell("G23").getContents());
-	search += sheet_title.getCell("G23").getContents().toLowerCase() + " ";
+	content_title.add(sheet_title.getCell("F21").getContents());
+	search += sheet_title.getCell("F21").getContents().toLowerCase() + " ";
 
 	// ОКТМО
-	content_title.add(sheet_title.getCell("G25").getContents());
+	content_title.add(sheet_title.getCell("F23").getContents());
 
 	// Юридический адрес
-	content_title.add(sheet_title.getCell("G28").getContents());
+	content_title.add(sheet_title.getCell("F26").getContents());
 
 	// Почтовый адрес
-	content_title.add(sheet_title.getCell("G29").getContents());
+	content_title.add(sheet_title.getCell("F27").getContents());
 
 	// ФИО руководителя
-	content_title.add(sheet_title.getCell("G32").getContents());
+	content_title.add(sheet_title.getCell("F30").getContents());
 
 	// Тел руководителя
-	content_title.add(sheet_title.getCell("G33").getContents());
+	content_title.add(sheet_title.getCell("F31").getContents());
 
 	// ФИО гл бухгалтера
-	content_title.add(sheet_title.getCell("G36").getContents());
+	content_title.add(sheet_title.getCell("F34").getContents());
 
 	// Тел гл бухгалтера
-	content_title.add(sheet_title.getCell("G37").getContents());
+	content_title.add(sheet_title.getCell("F35").getContents());
 
 	// ФИО ответ за форму
-	content_title.add(sheet_title.getCell("G40").getContents());
+	content_title.add(sheet_title.getCell("F38").getContents());
 
 	// Должность ответ за форму
-	content_title.add(sheet_title.getCell("G41").getContents());
+	content_title.add(sheet_title.getCell("F39").getContents());
 
 	// Тел ответ за форму
-	content_title.add(sheet_title.getCell("G42").getContents());
+	content_title.add(sheet_title.getCell("F40").getContents());
 
 	// Емаил ответ за форму
-	content_title.add(sheet_title.getCell("G43").getContents());
+	content_title.add(sheet_title.getCell("F41").getContents());
 
 	// Переменная для поиска
 	content_title.add(search);
@@ -263,8 +262,8 @@ public class AddTableSetev extends SwingWorker {
 	ArrayList<String> content_otpusk = new ArrayList<String>();
 
 	// ОТПУСК
-	for (int i = 15; i < 87; i++) {
-	    if (i != 36 && i != 58 && i != 62 && i != 73) {
+	for (int i = 11; i < 58; i++) {
+	    if (i != 30 && i != 50 && i != 53) {
 		// всего
 		content_otpusk.add(getZero(sheet_otpusk.getCell(
 			"F" + Integer.toString(i)).getContents()));

@@ -337,7 +337,7 @@ public class Reports extends JPanel {
 	    PreparedStatement preparedStmt = conn.prepareStatement(query);
 
 	    preparedStmt.setInt(2, new Integer(
-		    ((JFormattedTextField) objects[2]).getText()));
+		    ((JFormattedTextField) objects[2]).getValue().toString()));
 
 	    // Конечная цена
 	    preparedStmt.setString(1, ((JFormattedTextField) objects[1])

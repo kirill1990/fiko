@@ -189,215 +189,50 @@ public class ToExcelSetev {
 		sheet.addCell(new Label(0, 4, inn.get(i + 1), tahoma12ptNoBold));
 
 		for (int p = 0; p < 2; p++) {
-		    sheet.addCell(new Label(0, 5 + p * 52,
-			    "Наименование показателя", tahoma9pt));
-		    sheet.addCell(new Label(1, 5 + p * 52, "Код строки",
+
+		    int dy = p * 80;
+
+		    int col = 5 + dy;
+
+		    sheet.addCell(new Label(0, col, "Наименование показателя",
 			    tahoma9pt));
+		    sheet.addCell(new Label(1, col, "Код строки", tahoma9pt));
+		    col++;
 
-		    sheet.addCell(new Label(0, 6 + p * 52,
-			    "Электроэнергия (тыс. кВт•ч)",
-			    tahoma9ptLeftBoldGray));
-		    sheet.mergeCells(0, 6 + p * 52, 31 + p * 10, 6 + p * 52);
+		    for (int column = 1; column < 93; column++) {
+			if (column == 22)
+			    column = 30;
+			if (column == 51)
+			    column = 60;
+			if (column == 63)
+			    column = 70;
 
-		    sheet.addCell(new Label(
-			    0,
-			    7 + p * 52,
-			    "Поступление в сеть из других организаций, в том числе: ",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 8 + p * 52, "  - из сетей ФСК",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 9 + p * 52,
-			    "  - от генерирующих компаний и блок-станций",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    10 + p * 52,
-			    "Поступление в сеть из других уровней напряжения (трансформация)",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 11 + p * 52, "ВН	",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 12 + p * 52, "СН1",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 13 + p * 52, "СН2",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 14 + p * 52, "НН", tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 15 + p * 52,
-			    "Отпуск из сети, в том числе: ", tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    16 + p * 52,
-			    "  - конечные потребители (кроме совмещающих с передачей)",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 17 + p * 52, "  - другие сети",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 18 + p * 52, "  - поставщики",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 19 + p * 52,
-			    "Отпуск в сеть других уровней напряжения",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 20 + p * 52,
-			    "Хозяйственные нужды сети", tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 21 + p * 52,
-			    "Потери, в том числе:", tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 22 + p * 52,
-			    "  - относимые на собственное потребление ",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    23 + p * 52,
-			    "Генерация на установках организации (совмещение деятельности)",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    24 + p * 52,
-			    "Собственное потребление (совмещение деятельности)",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 25 + p * 52, "Небаланс",
-			    tahoma9ptLeft));
+			String text = "";
 
-		    sheet.addCell(new Label(0, 26 + p * 52,
-			    "Мощность (МВт) <*>", tahoma9ptLeftBoldGray));
-		    sheet.mergeCells(0, 26 + p * 52, 31 + p * 10, 26 + p * 52);
+			if (column == 1)
+			    text = "Электроэнергия (тыс. кВт•ч)";
+			if (column == 30)
+			    text = "Мощность (МВт)";
+			if (column == 60)
+			    text = "Мощность (МВт)";
+			if (column == 70)
+			    text = "Фактический полезный отпуск конечным потребителям (тыс кВт ч)";
+			if (column == 80)
+			    text = "Стоимость услуг (тыс руб)";
 
-		    sheet.addCell(new Label(
-			    0,
-			    27 + p * 52,
-			    "Поступление в сеть из других организаций, в том числе: ",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 28 + p * 52, "  - из сетей ФСК",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 29 + p * 52,
-			    "  - от генерирующих компаний и блок-станций",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    30 + p * 52,
-			    "Поступление в сеть из других уровней напряжения (трансформация)",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 31 + p * 52, "ВН", tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 32 + p * 52, "СН1",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 33 + p * 52, "СН2",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 34 + p * 52, "НН", tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 35 + p * 52,
-			    "Отпуск из сети, в том числе: ", tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    36 + p * 52,
-			    "  - конечные потребители (кроме совмещающих с передачей)",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 37 + p * 52, "  - другие сети",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 38 + p * 52, "  - поставщики",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 39 + p * 52,
-			    "Отпуск в сеть других уровней напряжения",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 40 + p * 52,
-			    "Хозяйственные нужды сети", tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 41 + p * 52,
-			    "Потери, в том числе:", tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 42 + p * 52,
-			    "  - относимые на собственное потребление ",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    43 + p * 52,
-			    "Генерация на установках организации (совмещение деятельности)",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    44 + p * 52,
-			    "Собственное потребление (совмещение деятельности)",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 45 + p * 52, "Небаланс",
-			    tahoma9ptLeft));
+			if (text.equals("") != true) {
+			    sheet.addCell(new Label(0, col, text,
+				    tahoma9ptLeftBoldGray));
+			    sheet.mergeCells(0, col, 31 + p * 10, col);
+			    col++;
+			}
 
-		    sheet.addCell(new Label(0, 46 + p * 52,
-			    "Заявленная и присоединенная мощность (МВт)",
-			    tahoma9ptLeftBoldGray));
-		    sheet.mergeCells(0, 46 + p * 52, 31 + p * 10, 46 + p * 52);
-
-		    sheet.addCell(new Label(0, 47 + p * 52,
-			    "Заявленная мощность конечных потребителей ",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(0, 48 + p * 52,
-			    "Присоединенная мощность конечных потребителей",
-			    tahoma9ptLeft));
-
-		    sheet.addCell(new Label(0, 49 + p * 52,
-			    "Платежи, тыс. руб.", tahoma9ptLeftBoldGray));
-		    sheet.mergeCells(0, 49 + p * 52, 31 + p * 10, 49 + p * 52);
-
-		    sheet.addCell(new Label(
-			    0,
-			    50 + p * 52,
-			    "Стоимость поставленных организацией услуг по передаче услуг по передаче",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    51 + p * 52,
-			    "Стоимость приобретенных организацией услуг по передаче",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    52 + p * 52,
-			    "Поступления денежных средств в счет стоимости поставленных услуг по передаче",
-			    tahoma9ptLeft));
-		    sheet.addCell(new Label(
-			    0,
-			    53 + p * 52,
-			    "Уплата денежных средств в счет стоимости приобретенных услуг по передаче",
-			    tahoma9ptLeft));
-
-		    sheet.addCell(new Label(1, 7 + p * 52, "10", tahoma9pt));
-		    sheet.addCell(new Label(1, 8 + p * 52, "20", tahoma9pt));
-		    sheet.addCell(new Label(1, 9 + p * 52, "30", tahoma9pt));
-		    sheet.addCell(new Label(1, 10 + p * 52, "40", tahoma9pt));
-		    sheet.addCell(new Label(1, 11 + p * 52, "50", tahoma9pt));
-		    sheet.addCell(new Label(1, 12 + p * 52, "60", tahoma9pt));
-		    sheet.addCell(new Label(1, 13 + p * 52, "70", tahoma9pt));
-		    sheet.addCell(new Label(1, 14 + p * 52, "80", tahoma9pt));
-		    sheet.addCell(new Label(1, 15 + p * 52, "90", tahoma9pt));
-		    sheet.addCell(new Label(1, 16 + p * 52, "100", tahoma9pt));
-		    sheet.addCell(new Label(1, 17 + p * 52, "110", tahoma9pt));
-		    sheet.addCell(new Label(1, 18 + p * 52, "120", tahoma9pt));
-		    sheet.addCell(new Label(1, 19 + p * 52, "130", tahoma9pt));
-		    sheet.addCell(new Label(1, 20 + p * 52, "140", tahoma9pt));
-		    sheet.addCell(new Label(1, 21 + p * 52, "150", tahoma9pt));
-		    sheet.addCell(new Label(1, 22 + p * 52, "160", tahoma9pt));
-		    sheet.addCell(new Label(1, 23 + p * 52, "170", tahoma9pt));
-		    sheet.addCell(new Label(1, 24 + p * 52, "180", tahoma9pt));
-		    sheet.addCell(new Label(1, 25 + p * 52, "190", tahoma9pt));
-
-		    sheet.addCell(new Label(1, 27 + p * 52, "210", tahoma9pt));
-		    sheet.addCell(new Label(1, 28 + p * 52, "220", tahoma9pt));
-		    sheet.addCell(new Label(1, 29 + p * 52, "230", tahoma9pt));
-		    sheet.addCell(new Label(1, 30 + p * 52, "240", tahoma9pt));
-		    sheet.addCell(new Label(1, 31 + p * 52, "250", tahoma9pt));
-		    sheet.addCell(new Label(1, 32 + p * 52, "260", tahoma9pt));
-		    sheet.addCell(new Label(1, 33 + p * 52, "270", tahoma9pt));
-		    sheet.addCell(new Label(1, 34 + p * 52, "280", tahoma9pt));
-		    sheet.addCell(new Label(1, 35 + p * 52, "290", tahoma9pt));
-		    sheet.addCell(new Label(1, 36 + p * 52, "300", tahoma9pt));
-		    sheet.addCell(new Label(1, 37 + p * 52, "310", tahoma9pt));
-		    sheet.addCell(new Label(1, 38 + p * 52, "320", tahoma9pt));
-		    sheet.addCell(new Label(1, 39 + p * 52, "330", tahoma9pt));
-		    sheet.addCell(new Label(1, 40 + p * 52, "340", tahoma9pt));
-		    sheet.addCell(new Label(1, 41 + p * 52, "350", tahoma9pt));
-		    sheet.addCell(new Label(1, 42 + p * 52, "360", tahoma9pt));
-		    sheet.addCell(new Label(1, 43 + p * 52, "370", tahoma9pt));
-		    sheet.addCell(new Label(1, 44 + p * 52, "380", tahoma9pt));
-		    sheet.addCell(new Label(1, 45 + p * 52, "390", tahoma9pt));
-
-		    sheet.addCell(new Label(1, 47 + p * 52, "400", tahoma9pt));
-		    sheet.addCell(new Label(1, 48 + p * 52, "410", tahoma9pt));
-
-		    sheet.addCell(new Label(1, 50 + p * 52, "500", tahoma9pt));
-		    sheet.addCell(new Label(1, 51 + p * 52, "520", tahoma9pt));
-		    sheet.addCell(new Label(1, 52 + p * 52, "530", tahoma9pt));
-		    sheet.addCell(new Label(1, 53 + p * 52, "540", tahoma9pt));
+			sheet.addCell(new Label(0, col, getStringCode(Integer
+				.toString(column) + "0"), tahoma9ptLeft));
+			sheet.addCell(new Label(1, col, Integer
+				.toString(column) + "0", tahoma9pt));
+			col++;
+		    }
 		}
 
 		sheet.mergeCells(0, 2, 10, 2);
@@ -406,7 +241,7 @@ public class ToExcelSetev {
 		sheet.setRowView(2, 750);
 		sheet.setRowView(4, 750);
 
-		for (int p = 5; p < 106; p++) {
+		for (int p = 5; p < 10 + 80 * 2; p++) {
 		    sheet.setRowView(p, 450);
 		}
 
@@ -416,15 +251,25 @@ public class ToExcelSetev {
 
 		sheet.setColumnView(0, 50);
 
-		String[] months = { "январь", "февраль", "март", "апрель",
-			"май", "июнь", "июль", "август", "сентябрь", "октябрь",
-			"ноябрь", "декабрь" };
+		String[] months = {
+			"январь",
+			"февраль",
+			"март",
+			"апрель",
+			"май",
+			"июнь",
+			"июль",
+			"август",
+			"сентябрь",
+			"октябрь",
+			"ноябрь",
+			"декабрь" };
 
-		Vector<Vector<String>> done = new Vector<Vector<String>>(44, 1);
+		Vector<Vector<String>> done = new Vector<Vector<String>>(68, 1);
 		Vector<Vector<Double>> done_num = new Vector<Vector<Double>>(
-			44, 1);
+			68, 1);
 
-		for (int v = 0; v < 44; v++) {
+		for (int v = 0; v < 68; v++) {
 		    Vector<String> element = new Vector<String>(5);
 		    Vector<Double> el_num = new Vector<Double>(5);
 		    for (int r = 0; r < 5; r++) {
@@ -435,32 +280,27 @@ public class ToExcelSetev {
 		    done_num.add(el_num);
 		}
 
-		for (int p = 0; p < months.length; p++) {
+		for (int month = 0; month < months.length; month++) {
 		    // смещение по строчно
-		    int x = p;
+		    int dy = month * 5;
 		    // смещение по столбцам
-		    int y = 0;
+		    int dx = 0;
 
-		    if (p > 5) {
-			x = x - 6;
-			y = 1;
+		    if (month > 5) {
+			dy = (month - 6) * 5;
+			dx = 80;
 		    }
 
-		    sheet.addCell(new Label(2 + x * 5, 5 + y * 52, "Всего",
-			    tahoma9pt));
-		    sheet.addCell(new Label(3 + x * 5, 5 + y * 52, "ВН",
-			    tahoma9pt));
-		    sheet.addCell(new Label(4 + x * 5, 5 + y * 52, "СН1",
-			    tahoma9pt));
-		    sheet.addCell(new Label(5 + x * 5, 5 + y * 52, "СН2",
-			    tahoma9pt));
-		    sheet.addCell(new Label(6 + x * 5, 5 + y * 52, "НН",
-			    tahoma9pt));
-		    sheet.addCell(new Label(2 + x * 5, 4 + y * 52, months[p],
+		    sheet.addCell(new Label(2 + dy, 4 + dx, months[month],
 			    tahoma12ptBold));
+		    sheet.mergeCells(2 + dy, 4 + dx, 6 + dy, 4 + dx);
 
-		    sheet.mergeCells(2 + x * 5, 4 + y * 52, 6 + x * 5,
-			    4 + y * 52);
+		    String[] text = { "Всего", "ВН", "СН1", "СН2", "НН" };
+
+		    for (int each = 0; each < text.length; each++) {
+			sheet.addCell(new Label(2 + dy + each, 5 + dx,
+				text[each], tahoma9pt));
+		    }
 
 		    /*
 		     * Заполнение формул
@@ -470,7 +310,8 @@ public class ToExcelSetev {
 		    int add_y = 0;
 
 		    for (int res_i = 0; res_i < done.size(); res_i++) {
-			if (res_i == 19 || res_i == 38 || res_i == 40) {
+			if (res_i == 21 || res_i == 42 || res_i == 45
+				|| res_i == 55) {
 			    // пропуск строки
 			    add_y++;
 			}
@@ -479,16 +320,16 @@ public class ToExcelSetev {
 			    String res = "";
 			    if (done.get(res_i).get(res_p).equals("")) {
 				// первая ячейка в формуле
-				res = getColumnExcel(2 + res_p + x * 5)
+				res = getColumnExcel(2 + res_p + dy)
 					+ Integer.toString(8 + res_i + add_y
-						+ y * 52);
+						+ dx);
 			    } else {
 				// дополнительная ячейка в формуле
 				res = done.get(res_i).get(res_p)
 					+ " + "
-					+ getColumnExcel(2 + res_p + x * 5)
+					+ getColumnExcel(2 + res_p + dy)
 					+ Integer.toString(8 + res_i + add_y
-						+ y * 52);
+						+ dx);
 			    }
 			    done.get(res_i).set(res_p, res);
 			}
@@ -501,21 +342,21 @@ public class ToExcelSetev {
 		    // @SuppressWarnings({ "unchecked", "unused", "rawtypes" })
 		    @SuppressWarnings({ "rawtypes" })
 		    Vector<Vector> result = new ConnectionBD().getInfo(
-			    inn.get(i).toString(), months[p], year);
-		    
+			    inn.get(i).toString(), months[month], year);
 
 		    // количество добавочных строк
 		    add_y = 0;
 		    for (int res_i = 0; res_i < result.size(); res_i++) {
-			if (res_i == 19 || res_i == 38 || res_i == 40) {
+			if (res_i == 21 || res_i == 42 || res_i == 45
+				|| res_i == 55) {
 			    // пропуск строки
 			    add_y++;
 			}
 
 			// "Всего"
-			sheet.addCell(new Label(2 + x * 5, 7 + res_i + add_y
-				+ y * 52, toNumberString(result.get(res_i)
-				.get(0).toString()), tahoma9ptGreen));
+			sheet.addCell(new Label(2 + dy, 7 + res_i + add_y + dx,
+				toNumberString(result.get(res_i).get(0)
+					.toString()), tahoma9ptGreen));
 
 			Double sum = new BigDecimal(done_num.get(res_i).get(0)
 				+ parseStringToDouble(result.get(res_i).get(0)
@@ -526,10 +367,10 @@ public class ToExcelSetev {
 
 			for (int res_p = 1; res_p < result.get(res_i).size(); res_p++) {
 			    // остальные
-			    sheet.addCell(new Label(2 + res_p + x * 5, 7
-				    + res_i + add_y + y * 52,
-				    toNumberString(result.get(res_i).get(res_p)
-					    .toString()), tahoma9ptYellow));
+			    sheet.addCell(new Label(2 + res_p + dy, 7 + res_i
+				    + add_y + dx, toNumberString(result
+				    .get(res_i).get(res_p).toString()),
+				    tahoma9ptYellow));
 
 			    sum = new BigDecimal(done_num.get(res_i).get(res_p)
 				    + parseStringToDouble(result.get(res_i)
@@ -546,42 +387,36 @@ public class ToExcelSetev {
 		 */
 
 		{
-		    int x = 6;
-		    int y = 1;
+		    int x = 6 * 5;
+		    int y = 80;
 		    int add_y = 0;
 
-		    sheet.addCell(new Label(2 + x * 5, 5 + y * 52, "Всего",
-			    tahoma9pt));
-		    sheet.addCell(new Label(3 + x * 5, 5 + y * 52, "ВН",
-			    tahoma9pt));
-		    sheet.addCell(new Label(4 + x * 5, 5 + y * 52, "СН1",
-			    tahoma9pt));
-		    sheet.addCell(new Label(5 + x * 5, 5 + y * 52, "СН2",
-			    tahoma9pt));
-		    sheet.addCell(new Label(6 + x * 5, 5 + y * 52, "НН",
-			    tahoma9pt));
-		    sheet.addCell(new Label(2 + x * 5, 4 + y * 52, "Итог",
+		    sheet.addCell(new Label(2 + x, 5 + y, "Всего", tahoma9pt));
+		    sheet.addCell(new Label(3 + x, 5 + y, "ВН", tahoma9pt));
+		    sheet.addCell(new Label(4 + x, 5 + y, "СН1", tahoma9pt));
+		    sheet.addCell(new Label(5 + x, 5 + y, "СН2", tahoma9pt));
+		    sheet.addCell(new Label(6 + x, 5 + y, "НН", tahoma9pt));
+		    sheet.addCell(new Label(2 + x, 4 + y, "Итог",
 			    tahoma12ptBold));
 
-		    sheet.mergeCells(2 + x * 5, 4 + y * 52, 6 + x * 5,
-			    4 + y * 52);
+		    sheet.mergeCells(2 + x, 4 + y, 6 + x, 4 + y);
 
 		    for (int res_i = 0; res_i < done.size(); res_i++) {
-			if (res_i == 19 || res_i == 38 || res_i == 40) {
+			if (res_i == 21 || res_i == 42 || res_i == 45
+				|| res_i == 55) {
 			    // пропуск строки
 			    add_y++;
 			}
 
 			// всего
-			sheet.addCell(new Formula(2 + x * 5, 7 + res_i + add_y
-				+ y * 52, "SUM("
-				+ done.get(res_i).get(0).toString() + ")",
-				tahoma9ptGreen));
+			sheet.addCell(new Formula(2 + x, 7 + res_i + add_y + y,
+				"SUM(" + done.get(res_i).get(0).toString()
+					+ ")", tahoma9ptGreen));
 
 			for (int res_p = 1; res_p < done.get(res_i).size(); res_p++) {
 			    // остальные
-			    sheet.addCell(new Formula(2 + res_p + x * 5, 7
-				    + res_i + add_y + y * 52, "SUM("
+			    sheet.addCell(new Formula(2 + res_p + x, 7 + res_i
+				    + add_y + y, "SUM("
 				    + done.get(res_i).get(res_p).toString()
 				    + ")", tahoma9ptYellow));
 			}
@@ -596,23 +431,22 @@ public class ToExcelSetev {
 		Vector<Vector> result = new ConnectionBD().getInfo(inn.get(i)
 			.toString(), "год", year);
 
-		int x = 7;
-		int y = 1;
+		int x = 7 * 5;
+		int y = 80;
 		int add_y = 0;
 
-		sheet.addCell(new Label(2 + x * 5, 5 + y * 52, "Всего",
-			tahoma9pt));
-		sheet.addCell(new Label(3 + x * 5, 5 + y * 52, "ВН", tahoma9pt));
-		sheet.addCell(new Label(4 + x * 5, 5 + y * 52, "СН1", tahoma9pt));
-		sheet.addCell(new Label(5 + x * 5, 5 + y * 52, "СН2", tahoma9pt));
-		sheet.addCell(new Label(6 + x * 5, 5 + y * 52, "НН", tahoma9pt));
-		sheet.addCell(new Label(2 + x * 5, 4 + y * 52, "Год",
-			tahoma12ptBold));
+		sheet.addCell(new Label(2 + x, 5 + y, "Всего", tahoma9pt));
+		sheet.addCell(new Label(3 + x, 5 + y, "ВН", tahoma9pt));
+		sheet.addCell(new Label(4 + x, 5 + y, "СН1", tahoma9pt));
+		sheet.addCell(new Label(5 + x, 5 + y, "СН2", tahoma9pt));
+		sheet.addCell(new Label(6 + x, 5 + y, "НН", tahoma9pt));
+		sheet.addCell(new Label(2 + x, 4 + y, "Год", tahoma12ptBold));
 
-		sheet.mergeCells(2 + x * 5, 4 + y * 52, 6 + x * 5, 4 + y * 52);
+		sheet.mergeCells(2 + x, 4 + y, 6 + x, 4 + y);
 
 		for (int res_i = 0; res_i < result.size(); res_i++) {
-		    if (res_i == 19 || res_i == 38 || res_i == 40) {
+		    if (res_i == 21 || res_i == 42 || res_i == 45
+			    || res_i == 55) {
 			// пропуск строки
 			add_y++;
 		    }
@@ -621,13 +455,13 @@ public class ToExcelSetev {
 
 		    if (res.equals(done_num.get(res_i).get(0))) {
 			// всего
-			sheet.addCell(new Label(2 + x * 5, 7 + res_i + add_y
-				+ y * 52, toNumberString(result.get(res_i)
-				.get(0).toString()), tahoma9ptGreen));
+			sheet.addCell(new Label(2 + x, 7 + res_i + add_y + y,
+				toNumberString(result.get(res_i).get(0)
+					.toString()), tahoma9ptGreen));
 		    } else {
-			sheet.addCell(new Label(2 + x * 5, 7 + res_i + add_y
-				+ y * 52, toNumberString(result.get(res_i)
-				.get(0).toString()), tahoma9ptRed));
+			sheet.addCell(new Label(2 + x, 7 + res_i + add_y + y,
+				toNumberString(result.get(res_i).get(0)
+					.toString()), tahoma9ptRed));
 		    }
 
 		    for (int res_p = 1; res_p < done.get(res_i).size(); res_p++) {
@@ -636,15 +470,15 @@ public class ToExcelSetev {
 
 			if (res.equals(done_num.get(res_i).get(res_p))) {
 			    // остальные
-			    sheet.addCell(new Label(2 + res_p + x * 5, 7
-				    + res_i + add_y + y * 52,
-				    toNumberString(result.get(res_i).get(res_p)
-					    .toString()), tahoma9ptYellow));
+			    sheet.addCell(new Label(2 + res_p + x, 7 + res_i
+				    + add_y + y, toNumberString(result
+				    .get(res_i).get(res_p).toString()),
+				    tahoma9ptYellow));
 			} else {
-			    sheet.addCell(new Label(2 + res_p + x * 5, 7
-				    + res_i + add_y + y * 52,
-				    toNumberString(result.get(res_i).get(res_p)
-					    .toString()), tahoma9ptORANGE));
+			    sheet.addCell(new Label(2 + res_p + x, 7 + res_i
+				    + add_y + y, toNumberString(result
+				    .get(res_i).get(res_p).toString()),
+				    tahoma9ptORANGE));
 			}
 		    }
 		}
@@ -726,5 +560,223 @@ public class ToExcelSetev {
 	}
 
 	return 0.0;
+    }
+
+    /**
+     * Расшифровка кода строки шаблона
+     * 
+     * @param _code
+     *            номер строки
+     * @return текст строки
+     */
+    public String getStringCode(String _code) {
+	int code = Integer.parseInt(_code);
+	switch (code) {
+	case 10:
+	    return "Поступление в сеть из других организаций, в том числе: ";
+	case 20: {
+	    return "- из сетей ФСК";
+	}
+	case 30: {
+	    return "- от генерирующих компаний и блок-станций";
+	}
+	case 40: {
+	    return "- от смежных сетевых организаций";
+	}
+	case 50: {
+	    return "Поступление в сеть из других уровней напряжения (трансформация)";
+	}
+	case 60: {
+	    return "ВН";
+	}
+	case 70: {
+	    return "СН1";
+	}
+	case 80: {
+	    return "СН2";
+	}
+	case 90: {
+	    return "НН";
+	}
+	case 100: {
+	    return "Отпуск из сети, в том числе: ";
+	}
+	case 110: {
+	    return "- конечные потребители - юридические лица (кроме совмещающих с передачей)";
+	}
+	case 120: {
+	    return "- население и приравненные к ним группы";
+	}
+	case 130: {
+	    return "- другие сети, в том числе потребители имеющие статус ТСО";
+	}
+	case 140: {
+	    return "- поставщики";
+	}
+	case 150: {
+	    return "Отпуск в сеть других уровней напряжения";
+	}
+	case 160: {
+	    return "Хозяйственные нужды организации";
+	}
+	case 170: {
+	    return "Генерация на установках организации (совмещение деятельности)";
+	}
+	case 180: {
+	    return "Собственное потребление (совмещение деятельности)";
+	}
+	case 190: {
+	    return "Потери, в том числе:";
+	}
+	case 200: {
+	    return "- относимые на собственное потребление ";
+	}
+	case 210: {
+	    return "Небаланс";
+	}
+	case 300: {
+	    return "Поступление в сеть из других организаций, в том числе: ";
+	}
+	case 310: {
+	    return "- из сетей ФСК";
+	}
+	case 320: {
+	    return "- от генерирующих компаний и блок-станций";
+	}
+	case 330: {
+	    return "- от смежных сетевых организаций";
+	}
+	case 340: {
+	    return "Поступление в сеть из других уровней напряжения (трансформация)";
+	}
+	case 350: {
+	    return "ВН";
+	}
+	case 360: {
+	    return "СН1";
+	}
+	case 370: {
+	    return "СН2";
+	}
+	case 380: {
+	    return "НН";
+	}
+	case 390: {
+	    return "Отпуск из сети, в том числе: ";
+	}
+	case 400: {
+	    return "- конечные потребители - юридические лица (кроме совмещающих с передачей)";
+	}
+	case 410: {
+	    return "- население и приравненные к ним группы";
+	}
+	case 420: {
+	    return "- другие сети";
+	}
+	case 430: {
+	    return "- поставщики";
+	}
+	case 440: {
+	    return "Отпуск в сеть других уровней напряжения";
+	}
+	case 450: {
+	    return "Хозяйственные нужды сети";
+	}
+	case 460: {
+	    return "Генерация на установках организации (совмещение деятельности)";
+	}
+	case 470: {
+	    return "Собственное потребление (совмещение деятельности)";
+	}
+	case 480: {
+	    return "Потери, в том числе:";
+	}
+	case 490: {
+	    return "- относимые на собственное потребление ";
+	}
+	case 500: {
+	    return "Небаланс";
+	}
+	case 600: {
+	    return "Заявленная мощность конечных потребителей";
+	}
+	case 610: {
+	    return "Максимальная мощность";
+	}
+	case 620: {
+	    return "Резервируемая мощность";
+	}
+	case 700: {
+	    return "Полезный отпуск конечным потребителям, в том числе:";
+	}
+	case 710: {
+	    return "- по одноставочному тарифу";
+	}
+	case 720: {
+	    return "- по двухставочному тарифу, в том числе:";
+	}
+	case 730: {
+	    return "-- мощность";
+	}
+	case 740: {
+	    return "-- компенсация потерь";
+	}
+	case 750: {
+	    return "Полезный отпуск потребителям ГП, ЭСО, ЭСК, в том числе:";
+	}
+	case 760: {
+	    return "- по одноставочному тарифу";
+	}
+	case 770: {
+	    return "- по двухставочному тарифу, в том числе:";
+	}
+	case 780: {
+	    return "-- мощность";
+	}
+	case 790: {
+	    return "-- компенсация потерь";
+	}
+	case 800: {
+	    return "Полезный отпуск конечным потребителям, в том числе:";
+	}
+	case 810: {
+	    return "- по одноставочному тарифу";
+	}
+	case 820: {
+	    return "- по двухставочному тарифу, в том числе:";
+	}
+	case 830: {
+	    return "-- мощность";
+	}
+	case 840: {
+	    return "-- компенсация потерь";
+	}
+	case 850: {
+	    return "Полезный отпуск потребителям ГП, ЭСО, ЭСК, в том числе:";
+	}
+	case 860: {
+	    return "- по одноставочному тарифу";
+	}
+	case 870: {
+	    return "- по двухставочному тарифу, в том числе:";
+	}
+	case 880: {
+	    return "-- мощность";
+	}
+	case 890: {
+	    return "-- компенсация потерь";
+	}
+	case 900: {
+	    return "Стоимость услуг ФСК, в том числе:";
+	}
+	case 910: {
+	    return "- мощность";
+	}
+	case 920: {
+	    return "- компенсация потерь";
+	}
+	}
+	return _code;
+
     }
 }

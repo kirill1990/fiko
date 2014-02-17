@@ -1,5 +1,7 @@
 package basedata;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,6 +10,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Vector;
+
+import output.ToExcelSbut;
+
+import jxl.Sheet;
 
 public class ConnectionBD {
     private Connection conn = null;
@@ -110,7 +116,13 @@ public class ConnectionBD {
 	     * INTEGER REFERENCES sbut_title(id) table_id INTEGER set_all STRING
 	     * vn STRING cn1 STRING cn2 STRING nn STRING code STRING
 	     */
-	    stat.executeUpdate("CREATE TABLE IF NOT EXISTS sbut_otpusk(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, sbut_titleid INTEGER REFERENCES sbut_title(id) ON UPDATE CASCADE ON DELETE CASCADE, table_id INTEGER, set_all STRING, vn STRING, cn1 STRING, cn2 STRING, nn STRING, code STRING);");
+	    stat.executeUpdate("CREATE TABLE IF NOT EXISTS sbut_otpusk(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, sbut_titleid INTEGER REFERENCES sbut_title(id) ON UPDATE CASCADE ON DELETE CASCADE, table_id INTEGER, set_all STRING, vn STRING, cn1 STRING, cn2 STRING, nn STRING, fck STRING, gn STRING, code STRING);");
+	    stat.executeUpdate("CREATE TABLE IF NOT EXISTS sbut_otpusk2("
+		    + "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		    + "sbut_titleid INTEGER REFERENCES sbut_title(id) ON UPDATE CASCADE ON DELETE CASCADE, "
+		    + "table_id INTEGER, " + "set_all STRING, "
+		    + "atr1 STRING, " + "atr2 STRING, " + "atr3 STRING, "
+		    + "code STRING);");
 
 	    /*
 	     * Продажа аналогично покупка
@@ -119,8 +131,16 @@ public class ConnectionBD {
 	     * INTEGER REFERENCES sbut_title(id) atr1 STRING atr2 STRING atr3
 	     * STRING atr4 STRING atr5 STRING code STRING
 	     */
-	    stat.executeUpdate("CREATE TABLE IF NOT EXISTS sbut_sell(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, sbut_titleid INTEGER REFERENCES sbut_title(id) ON UPDATE CASCADE ON DELETE CASCADE, atr1 STRING, atr2 STRING, atr3 STRING, atr4 STRING, atr5 STRING, code STRING);");
-	    stat.executeUpdate("CREATE TABLE IF NOT EXISTS sbut_buy(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, sbut_titleid INTEGER REFERENCES sbut_title(id) ON UPDATE CASCADE ON DELETE CASCADE, atr1 STRING, atr2 STRING, atr3 STRING, atr4 STRING, atr5 STRING, code STRING);");
+	    stat.executeUpdate("CREATE TABLE IF NOT EXISTS sbut_sell("
+		    + "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		    + "sbut_titleid INTEGER REFERENCES sbut_title(id) ON UPDATE CASCADE ON DELETE CASCADE, "
+		    + "atr1 STRING, " + "atr2 STRING, " + "atr3 STRING, "
+		    + "atr4 STRING, " + "atr5 STRING, " + "code STRING);");
+	    stat.executeUpdate("CREATE TABLE IF NOT EXISTS sbut_buy("
+		    + "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		    + "sbut_titleid INTEGER REFERENCES sbut_title(id) ON UPDATE CASCADE ON DELETE CASCADE, "
+		    + "atr1 STRING, " + "atr2 STRING, " + "atr3 STRING, "
+		    + "atr4 STRING, " + "atr5 STRING, " + "code STRING);");
 
 	    /*
 	     * Отпуск ээ по рег тар (населен)
@@ -129,7 +149,15 @@ public class ConnectionBD {
 	     * INTEGER REFERENCES sbut_title(id) table_id INTEGER atr1 STRING
 	     * atr2 STRING atr3 STRING code STRING
 	     */
-	    stat.executeUpdate("CREATE TABLE IF NOT EXISTS sbut_nas(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, sbut_titleid INTEGER REFERENCES sbut_title(id) ON UPDATE CASCADE ON DELETE CASCADE, table_id INTEGER, atr1 STRING, atr2 STRING, atr3 STRING, code STRING);");
+	    stat.executeUpdate("CREATE TABLE IF NOT EXISTS sbut_nas("
+		    + "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+		    + "sbut_titleid INTEGER REFERENCES sbut_title(id) ON UPDATE CASCADE ON DELETE CASCADE, "
+		    + "atr1 STRING, " + "atr2 STRING, " + "atr3 STRING, "
+		    + "atr4 STRING, " + "atr5 STRING, " + "atr6 STRING, "
+		    + "atr7 STRING, " + "atr8 STRING, " + "atr9 STRING, "
+		    + "atr10 STRING, " + "atr11 STRING, " + "atr12 STRING, "
+		    + "atr13 STRING, " + "atr14 STRING, " + "atr15 STRING, "
+		    + "code STRING);");
 
 	    /*
 	     * Сетевые орг
@@ -571,7 +599,7 @@ public class ConnectionBD {
 		    element3.add("Мощность (МВт)");
 		    result.add(element3);
 		}
-		
+
 		if (rs.getString(1).equals("600")) {
 		    Vector<String> element3 = new Vector<String>();
 		    element3.add("");
@@ -1244,12 +1272,13 @@ public class ConnectionBD {
      * @param content_otpusk
      */
     public void addTableSbut(ArrayList<String> content_title,
-	    ArrayList<String> content_otpusk1,
-	    ArrayList<String> content_otpusk2,
-	    ArrayList<String> content_otpusk3,
-	    ArrayList<String> content_otpusk4,
-	    ArrayList<String> content_otpusk5,
-	    ArrayList<String> content_otpusk6, ArrayList<String> content_otpusk7) {
+	    Sheet sheet_otpusk1, Sheet sheet_otpusk2, Sheet sheet_otpusk3,
+	    Sheet sheet_otpusk4, Sheet sheet_otpusk5, Sheet sheet_otpusk6,
+	    Sheet sheet_otpusk7) {
+
+	// sheet_otpusk1 - 0-11
+	// sheet_otpusk2 - 12-21
+	// sheet_otpusk4 - 22-37
 	try {
 	    // добавление записи в таблицу title
 	    pst = conn
@@ -1271,78 +1300,158 @@ public class ConnectionBD {
 	    rs = stat.executeQuery("SELECT last_insert_rowid();");
 	    int current_id = rs.getInt(1);
 
+	    int table_id_otpusk = 0;
+
 	    /*
 	     * добавление записи в таблицу sbut_otpusk
 	     */
 	    pst = conn
-		    .prepareStatement("INSERT INTO sbut_otpusk VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		    .prepareStatement("INSERT INTO sbut_otpusk VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
-	    for (int i = 0; i < content_otpusk1.size(); i = i + 7) {
-		pst.setInt(2, current_id);
-		pst.setInt(3, Integer.parseInt(content_otpusk1.get(i + 6)));
-		for (int p = 0; p < 6; p++) {
-		    pst.setString(4 + p, content_otpusk1.get(i + p));
+	    for (int table = 0; table < 12; table++) {
+		int dtable = table * 7;
+		for (int row = 16; row < 50; row++) {
+		    pst.setInt(2, current_id);
+		    pst.setInt(3, table_id_otpusk);
+
+		    for (int i = 0; i < 7; i++) {
+			String cell = sheet_otpusk1.getCell(5 + i + dtable,
+				row - 1).getContents();
+
+			pst.setString(4 + i, getZero(cell));
+		    }
+
+		    // Код строки
+		    pst.setString(11,
+			    sheet_otpusk1.getCell("E" + Integer.toString(row))
+				    .getContents());
+		    pst.addBatch();
+
 		}
-
-		pst.addBatch();
+		table_id_otpusk++;
 	    }
 
-	    for (int i = 0; i < content_otpusk3.size(); i = i + 7) {
-		pst.setInt(2, current_id);
-		pst.setInt(3, Integer.parseInt(content_otpusk3.get(i + 6)));
-		for (int p = 0; p < 6; p++) {
-		    pst.setString(4 + p, content_otpusk3.get(i + p));
-		}
+	    for (int table = 0; table < 10; table++) {
+		int dtable = table * 7;
+		for (int row = 16; row < 50; row++) {
+		    pst.setInt(2, current_id);
+		    pst.setInt(3, table_id_otpusk);
 
-		pst.addBatch();
+		    for (int i = 0; i < 7; i++) {
+			String cell = sheet_otpusk2.getCell(5 + i + dtable,
+				row - 1).getContents();
+
+			pst.setString(4 + i, getZero(cell));
+		    }
+
+		    // Код строки
+		    pst.setString(4 + 7,
+			    sheet_otpusk2.getCell("E" + Integer.toString(row))
+				    .getContents());
+		    pst.addBatch();
+
+		}
+		table_id_otpusk++;
 	    }
 
-	    for (int i = 0; i < content_otpusk4.size(); i = i + 7) {
-		pst.setInt(2, current_id);
-		pst.setInt(3, Integer.parseInt(content_otpusk4.get(i + 6)));
-		for (int p = 0; p < 6; p++) {
-		    pst.setString(4 + p, content_otpusk4.get(i + p));
+	    for (int table = 0; table < 16; table++) {
+		int dtable = table * 7;
+		for (int row = 17; row < 51; row++) {
+		    pst.setInt(2, current_id);
+		    pst.setInt(3, table_id_otpusk);
+
+		    for (int i = 0; i < 7; i++) {
+			String cell = sheet_otpusk4.getCell(5 + i + dtable,
+				row - 1).getContents();
+
+			pst.setString(4 + i, getZero(cell));
+		    }
+
+		    // Код строки
+		    pst.setString(4 + 7,
+			    sheet_otpusk4.getCell("E" + Integer.toString(row))
+				    .getContents());
+		    pst.addBatch();
+
 		}
-
-		pst.addBatch();
-	    }
-
-	    for (int i = 0; i < content_otpusk5.size(); i = i + 7) {
-		pst.setInt(2, current_id);
-		pst.setInt(3, Integer.parseInt(content_otpusk5.get(i + 6)));
-		for (int p = 0; p < 6; p++) {
-		    pst.setString(4 + p, content_otpusk5.get(i + p));
-		}
-
-		pst.addBatch();
+		table_id_otpusk++;
 	    }
 
 	    pst.executeBatch();
 
 	    pst = conn
-		    .prepareStatement("INSERT INTO sbut_nas VALUES (?, ?, ?, ?, ?, ?, ?);");
+		    .prepareStatement("INSERT INTO sbut_nas VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
-	    for (int i = 0; i < content_otpusk2.size(); i = i + 5) {
+	    for (int row = 15; row < 58; row++) {
 		pst.setInt(2, current_id);
-		pst.setInt(3, Integer.parseInt(content_otpusk2.get(i + 4)));
-		for (int p = 0; p < 4; p++) {
-		    pst.setString(4 + p, content_otpusk2.get(i + p));
+
+		for (int i = 0; i < 15; i++) {
+		    String cell = sheet_otpusk3.getCell(5 + i, row - 1)
+			    .getContents();
+
+		    pst.setString(3 + i, getZero(cell));
 		}
 
-		pst.addBatch();
-	    }
+		String text = sheet_otpusk3
+			.getCell("E" + Integer.toString(row)).getContents();
 
+		if (text.length() > 3)
+		    text = text.substring(1, 4);
+
+		// Код строки
+		pst.setString(18, text);
+		pst.addBatch();
+
+	    }
+	    pst.executeBatch();
+
+	    pst = conn
+		    .prepareStatement("INSERT INTO sbut_otpusk2 VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+
+	    int table_id_otpusk2 = 0;
+
+	    for (int table = 0; table < 14; table++) {
+		int dtable = table * 4;
+		for (int row = 17; row < 51; row++) {
+		    pst.setInt(2, current_id);
+		    pst.setInt(3, table_id_otpusk2);
+
+		    for (int i = 0; i < 4; i++) {
+			String cell = sheet_otpusk5.getCell(5 + i + dtable,
+				row - 1).getContents();
+
+			pst.setString(4 + i, getZero(cell));
+		    }
+
+		    // Код строки
+		    pst.setString(4 + 4,
+			    sheet_otpusk5.getCell("E" + Integer.toString(row))
+				    .getContents());
+		    pst.addBatch();
+
+		}
+		table_id_otpusk2++;
+	    }
 	    pst.executeBatch();
 
 	    pst = conn
 		    .prepareStatement("INSERT INTO sbut_sell VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
-	    for (int i = 0; i < content_otpusk6.size(); i = i + 6) {
+	    for (int row = 13; row < 31; row++) {
+
 		pst.setInt(2, current_id);
-		for (int p = 0; p < 6; p++) {
-		    pst.setString(3 + p, content_otpusk6.get(i + p));
+
+		for (int i = 0; i < 5; i++) {
+		    String cell = sheet_otpusk6.getCell(5 + i, row - 1)
+			    .getContents();
+
+		    pst.setString(3 + i, getZero(cell));
 		}
 
+		// Код строки
+		pst.setString(8,
+			sheet_otpusk6.getCell("E" + Integer.toString(row))
+				.getContents());
 		pst.addBatch();
 	    }
 
@@ -1351,16 +1460,36 @@ public class ConnectionBD {
 	    pst = conn
 		    .prepareStatement("INSERT INTO sbut_buy VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
-	    for (int i = 0; i < content_otpusk7.size(); i = i + 6) {
+	    for (int row = 13; row < 29; row++) {
+
 		pst.setInt(2, current_id);
-		for (int p = 0; p < 6; p++) {
-		    pst.setString(3 + p, content_otpusk7.get(i + p));
+
+		for (int i = 0; i < 5; i++) {
+		    String cell = sheet_otpusk7.getCell(5 + i, row - 1)
+			    .getContents();
+
+		    pst.setString(3 + i, getZero(cell));
 		}
 
+		// Код строки
+		pst.setString(8,
+			sheet_otpusk7.getCell("E" + Integer.toString(row))
+				.getContents());
 		pst.addBatch();
 	    }
 
 	    pst.executeBatch();
+
+	    // for (int i = 0; i < sheet_otpusk7.size(); i = i + 6) {
+	    // pst.setInt(2, current_id);
+	    // for (int p = 0; p < 6; p++) {
+	    // pst.setString(3 + p, sheet_otpusk7.get(i + p));
+	    // }
+	    //
+	    // pst.addBatch();
+	    // }
+	    //
+	    // pst.executeBatch();
 
 	    /*
 	     * Работа с таблицами presence и available
@@ -1642,58 +1771,373 @@ public class ConnectionBD {
 	return result;
     }
 
-    @SuppressWarnings({ "rawtypes" })
-    public Vector<Vector> getInfoSbut(String name, String month, String year,
-	    Integer table_begin, Integer table_end) {
-	// переменная под результат
-	Vector<Vector> result = new Vector<Vector>();
+    public Vector<Vector<Vector<Vector<String>>>> getInfoSbut(String inn,
+	    String year, Integer table_begin, Integer table_end) {
 
-	try {
-	    // Выполняем запрос, который у нас в переменной query
-	    // rs =
-	    // stat.executeQuery("SELECT m1.code, m1.set_all, m1.vn, m1.cn1, m1.cn2, m1.nn FROM set_otpusk AS m1, set_title AS m2 WHERE m1.set_titleid LIKE m2.id AND m2.year LIKE '"
-	    // + year.toString() + "' AND m2.inn LIKE '" + inn.toString() +
-	    // "' AND m2.month LIKE '" + month.toString() + "';");
+	Vector<Vector<Vector<Vector<String>>>> result = new Vector<Vector<Vector<Vector<String>>>>();
 
-	    rs = stat
-		    .executeQuery("SELECT id FROM sbut_title WHERE year LIKE '"
-			    + year.toString() + "' AND name LIKE '"
-			    + name.toString() + "' AND month LIKE '"
-			    + month.toString() + "';");
+	Vector<Vector<Vector<String>>> itog = new Vector<Vector<Vector<String>>>();
 
-	    if (rs.next()) {
-		String id = rs.getString(1);
+	for (String month : ToExcelSbut.months) {
 
-		for (int table = table_begin; table <= table_end; table++) {
-		    rs = stat
-			    .executeQuery("SELECT set_all, vn, cn1, cn2, nn FROM sbut_otpusk WHERE sbut_titleid LIKE '"
-				    + id
-				    + "' AND table_id LIKE '"
-				    + Integer.toString(table) + "';");
+	    // переменная под результат
+	    Vector<Vector<Vector<String>>> res_month = new Vector<Vector<Vector<String>>>();
 
-		    while (rs.next()) {
-			Vector<String> element = new Vector<String>();
+	    try {
+		// Выполняем запрос, который у нас в переменной query
+		// rs =
+		// stat.executeQuery("SELECT m1.code, m1.set_all, m1.vn, m1.cn1, m1.cn2, m1.nn FROM set_otpusk AS m1, set_title AS m2 WHERE m1.set_titleid LIKE m2.id AND m2.year LIKE '"
+		// + year.toString() + "' AND m2.inn LIKE '" + inn.toString() +
+		// "' AND m2.month LIKE '" + month.toString() + "';");
 
-			element.add(rs.getString(1));
-			element.add(rs.getString(2));
-			element.add(rs.getString(3));
-			element.add(rs.getString(4));
-			element.add(rs.getString(5));
+		rs = stat
+			.executeQuery("SELECT id FROM sbut_title WHERE year LIKE '"
+				+ year.toString()
+				+ "' AND inn LIKE '"
+				+ inn.toString()
+				+ "' AND month LIKE '"
+				+ month.toString() + "';");
 
-			// Присоединяем список к результату
-			result.add(element);
+		if (rs.next()) {
+		    String id = rs.getString(1);
+
+		    for (int table = table_begin, iterate = 0; table <= table_end; table++, iterate++) {
+
+			Vector<Vector<String>> res = new Vector<Vector<String>>();
+
+			if (itog.size() <= iterate)
+			    itog.add(new Vector<Vector<String>>());
+
+			rs = stat
+				.executeQuery("SELECT set_all, vn, cn1, cn2, nn, fck, gn FROM sbut_otpusk WHERE sbut_titleid LIKE '"
+					+ id
+					+ "' AND table_id LIKE '"
+					+ Integer.toString(table) + "';");
+
+			int code = 0;
+			while (rs.next()) {
+
+			    if (itog.get(iterate).size() <= code)
+				itog.get(iterate).add(new Vector<String>());
+
+			    Vector<String> element = new Vector<String>();
+
+			    for (int i = 0; i < 7; i++) {
+				if (itog.get(iterate).get(code).size() <= i)
+				    itog.get(iterate).get(code).add("0.0");
+
+				String value = rs.getString(i + 1);
+
+				Double v = parseStringToDouble(value);
+				Double v_i = Double.parseDouble(itog
+					.get(iterate).get(code).get(i));
+				itog.get(iterate).get(code)
+					.set(i, Double.toString(v_i + v));
+
+				element.add(value);
+
+			    }
+
+			    // Присоединяем список к результату
+			    res.add(element);
+			    code++;
+			}
+
+			res_month.add(res);
 		    }
 		}
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	} finally {
-	    try {
-		rs.close();
-		stat.close();
-		conn.close();
+		if (month != "итог")
+		    result.add(res_month);
+		else
+		    result.add(itog);
+
 	    } catch (Exception e) {
 		e.printStackTrace();
+	    } finally {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+	}
+	return result;
+    }
+
+    public Vector<Vector<Vector<Vector<String>>>> getInfoSbut_2(String inn,
+	    String year, Integer table_begin, Integer table_end) {
+
+	Vector<Vector<Vector<Vector<String>>>> result = new Vector<Vector<Vector<Vector<String>>>>();
+
+	Vector<Vector<Vector<String>>> itog = new Vector<Vector<Vector<String>>>();
+
+	for (String month : ToExcelSbut.months) {
+
+	    // переменная под результат
+	    Vector<Vector<Vector<String>>> res_month = new Vector<Vector<Vector<String>>>();
+
+	    try {
+		// Выполняем запрос, который у нас в переменной query
+		// rs =
+		// stat.executeQuery("SELECT m1.code, m1.set_all, m1.vn, m1.cn1, m1.cn2, m1.nn FROM set_otpusk AS m1, set_title AS m2 WHERE m1.set_titleid LIKE m2.id AND m2.year LIKE '"
+		// + year.toString() + "' AND m2.inn LIKE '" + inn.toString() +
+		// "' AND m2.month LIKE '" + month.toString() + "';");
+
+		rs = stat
+			.executeQuery("SELECT id FROM sbut_title WHERE year LIKE '"
+				+ year.toString()
+				+ "' AND inn LIKE '"
+				+ inn.toString()
+				+ "' AND month LIKE '"
+				+ month.toString() + "';");
+
+		if (rs.next()) {
+		    String id = rs.getString(1);
+
+		    for (int table = table_begin, iterate = 0; table <= table_end; table++, iterate++) {
+
+			Vector<Vector<String>> res = new Vector<Vector<String>>();
+
+			if (itog.size() <= iterate)
+			    itog.add(new Vector<Vector<String>>());
+
+			rs = stat
+				.executeQuery("SELECT set_all, atr1, atr2, atr3 FROM sbut_otpusk2 WHERE sbut_titleid LIKE '"
+					+ id
+					+ "' AND table_id LIKE '"
+					+ Integer.toString(table) + "';");
+
+			int code = 0;
+			while (rs.next()) {
+
+			    if (itog.get(iterate).size() <= code)
+				itog.get(iterate).add(new Vector<String>());
+
+			    Vector<String> element = new Vector<String>();
+
+			    for (int i = 0; i < 4; i++) {
+				if (itog.get(iterate).get(code).size() <= i)
+				    itog.get(iterate).get(code).add("0.0");
+
+				String value = rs.getString(i + 1);
+
+				Double v = parseStringToDouble(value);
+				Double v_i = Double.parseDouble(itog
+					.get(iterate).get(code).get(i));
+				itog.get(iterate).get(code)
+					.set(i, Double.toString(v_i + v));
+
+				element.add(value);
+
+			    }
+
+			    // Присоединяем список к результату
+			    res.add(element);
+			    code++;
+			}
+
+			res_month.add(res);
+		    }
+		}
+		if (month != "итог")
+		    result.add(res_month);
+		else
+		    result.add(itog);
+
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    } finally {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+	}
+	return result;
+    }
+    
+    public Vector<Vector<Vector<Vector<String>>>> getInfoSbut_nas(String inn,
+	    String year, Integer table_begin, Integer table_end) {
+
+	Vector<Vector<Vector<Vector<String>>>> result = new Vector<Vector<Vector<Vector<String>>>>();
+
+	Vector<Vector<Vector<String>>> itog = new Vector<Vector<Vector<String>>>();
+
+	for (String month : ToExcelSbut.months) {
+
+	    // переменная под результат
+	    Vector<Vector<Vector<String>>> res_month = new Vector<Vector<Vector<String>>>();
+
+	    try {
+		// Выполняем запрос, который у нас в переменной query
+		// rs =
+		// stat.executeQuery("SELECT m1.code, m1.set_all, m1.vn, m1.cn1, m1.cn2, m1.nn FROM set_otpusk AS m1, set_title AS m2 WHERE m1.set_titleid LIKE m2.id AND m2.year LIKE '"
+		// + year.toString() + "' AND m2.inn LIKE '" + inn.toString() +
+		// "' AND m2.month LIKE '" + month.toString() + "';");
+
+		rs = stat
+			.executeQuery("SELECT id FROM sbut_title WHERE year LIKE '"
+				+ year.toString()
+				+ "' AND inn LIKE '"
+				+ inn.toString()
+				+ "' AND month LIKE '"
+				+ month.toString() + "';");
+
+		if (rs.next()) {
+		    String id = rs.getString(1);
+
+		    for (int table = table_begin, iterate = 0; table <= table_end; table++, iterate++) {
+
+			Vector<Vector<String>> res = new Vector<Vector<String>>();
+
+			if (itog.size() <= iterate)
+			    itog.add(new Vector<Vector<String>>());
+
+			rs = stat
+				.executeQuery("SELECT * FROM sbut_nas WHERE sbut_titleid LIKE '"
+					+ id + "';");
+
+			int code = 0;
+			while (rs.next()) {
+
+			    if (itog.get(iterate).size() <= code)
+				itog.get(iterate).add(new Vector<String>());
+
+			    Vector<String> element = new Vector<String>();
+
+			    for (int i = 0; i < 15; i++) {
+				if (itog.get(iterate).get(code).size() <= i)
+				    itog.get(iterate).get(code).add("0.0");
+
+				String value = rs.getString(i + 3);
+
+				Double v = parseStringToDouble(value);
+				Double v_i = Double.parseDouble(itog
+					.get(iterate).get(code).get(i));
+				itog.get(iterate).get(code)
+					.set(i, Double.toString(v_i + v));
+
+				element.add(value);
+
+			    }
+
+			    // Присоединяем список к результату
+			    res.add(element);
+			    code++;
+			}
+
+			res_month.add(res);
+		    }
+		}
+		if (month != "итог")
+		    result.add(res_month);
+		else
+		    result.add(itog);
+
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    } finally {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+	}
+	return result;
+    }
+    
+    public Vector<Vector<Vector<Vector<String>>>> getInfoSbut_sb(String inn,
+	    String year, Integer table_begin, Integer table_end, String sb) {
+	
+	String table_title = "sbut_sell";
+	if(sb.equals("buy"))
+	    table_title = "sbut_buy";
+
+	Vector<Vector<Vector<Vector<String>>>> result = new Vector<Vector<Vector<Vector<String>>>>();
+
+	Vector<Vector<Vector<String>>> itog = new Vector<Vector<Vector<String>>>();
+
+	for (String month : ToExcelSbut.months) {
+
+	    // переменная под результат
+	    Vector<Vector<Vector<String>>> res_month = new Vector<Vector<Vector<String>>>();
+
+	    try {
+		// Выполняем запрос, который у нас в переменной query
+		// rs =
+		// stat.executeQuery("SELECT m1.code, m1.set_all, m1.vn, m1.cn1, m1.cn2, m1.nn FROM set_otpusk AS m1, set_title AS m2 WHERE m1.set_titleid LIKE m2.id AND m2.year LIKE '"
+		// + year.toString() + "' AND m2.inn LIKE '" + inn.toString() +
+		// "' AND m2.month LIKE '" + month.toString() + "';");
+
+		rs = stat
+			.executeQuery("SELECT id FROM sbut_title WHERE year LIKE '"
+				+ year.toString()
+				+ "' AND inn LIKE '"
+				+ inn.toString()
+				+ "' AND month LIKE '"
+				+ month.toString() + "';");
+
+		if (rs.next()) {
+		    String id = rs.getString(1);
+
+		    for (int table = table_begin, iterate = 0; table <= table_end; table++, iterate++) {
+
+			Vector<Vector<String>> res = new Vector<Vector<String>>();
+
+			if (itog.size() <= iterate)
+			    itog.add(new Vector<Vector<String>>());
+
+			rs = stat
+				.executeQuery("SELECT atr1, atr2, atr3, atr4, atr5 FROM "+table_title+" WHERE sbut_titleid LIKE '"
+					+ id + "';");
+
+			int code = 0;
+			while (rs.next()) {
+
+			    if (itog.get(iterate).size() <= code)
+				itog.get(iterate).add(new Vector<String>());
+
+			    Vector<String> element = new Vector<String>();
+
+			    for (int i = 0; i < 5; i++) {
+				if (itog.get(iterate).get(code).size() <= i)
+				    itog.get(iterate).get(code).add("0.0");
+
+				String value = rs.getString(i + 1);
+
+				Double v = parseStringToDouble(value);
+				Double v_i = Double.parseDouble(itog
+					.get(iterate).get(code).get(i));
+				itog.get(iterate).get(code)
+					.set(i, Double.toString(v_i + v));
+
+				element.add(value);
+
+			    }
+
+			    // Присоединяем список к результату
+			    res.add(element);
+			    code++;
+			}
+
+			res_month.add(res);
+		    }
+		}
+		if (month != "итог")
+		    result.add(res_month);
+		else
+		    result.add(itog);
+
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    } finally {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
 	    }
 	}
 	return result;
@@ -1860,6 +2304,57 @@ public class ConnectionBD {
 	}
 
 	return result;
+    }
+
+    private String getZero(String _text) {
+	if (_text == "") {
+	    return "0,0000";
+	}
+	return _text;
+    }
+
+    /**
+     * 
+     */
+    public void close() {
+	// TODO Auto-generated method stub
+	try {
+	    stat.close();
+	    conn.close();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+
+    private Double parseStringToDouble(String value) {
+	if (value != null) {
+	    value = value.replace(" ", "");
+	    value = value.replace(" ", "");
+	    value = value.replace(",", ".");
+
+	    try {
+		return new BigDecimal(value).setScale(4, RoundingMode.HALF_UP)
+			.doubleValue();
+	    } catch (Exception e) {
+		return 0.0;
+	    }
+	}
+
+	return 0.0;
+    }
+
+    /**
+     * @param name
+     * @param string
+     * @param year
+     * @param i
+     * @param j
+     * @return
+     */
+    public Vector<Vector> getInfoSbut(String name, String string, String year,
+	    int i, int j) {
+	// TODO Auto-generated method stub
+	return null;
     }
 
 }

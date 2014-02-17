@@ -39,8 +39,248 @@ public class ToExcelSbut {
     WritableCellFormat tahoma9ptLeftBoldGray = null;
 
     String year = "2012";
-    String[] months = { "январь", "февраль", "март", "апрель", "май", "июнь",
-	    "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь" };
+    public static String[] months = {
+	    "январь",
+	    "февраль",
+	    "март",
+	    "апрель",
+	    "май",
+	    "июнь",
+	    "июль",
+	    "август",
+	    "сентябрь",
+	    "октябрь",
+	    "ноябрь",
+	    "декабрь",
+	    "год",
+	    "итог" };
+
+    String[][] mOtpusk_1 = {
+	    {
+		    "Потребители с максимальной мощностью принадлежащих им энергопринимающих устройств от 10 МВт",
+		    "100" },
+	    { "Промышленные и приравненные к ним потребители", "111" },
+	    { "Электрифицированный железнодорожный транспорт", "121" },
+	    { "Электрифицированный городской транспорт", "131" },
+	    { "Непромышленные потребители", "141" },
+	    { "Сельскохозяйственные товаропроизводители", "151" },
+	    { "Бюджетные потребители", "161" },
+	    { "Другие энергоснабжающие организации", "171" },
+	    {
+		    "Потребители с максимальной мощностью принадлежащих им энергопринимающих устройств от 670 кВт до 10 МВт",
+		    "200" },
+	    { "Промышленные и приравненные к ним потребители", "211" },
+	    { "Электрифицированный железнодорожный транспорт", "221" },
+	    { "Электрифицированный городской транспорт", "231" },
+	    { "Непромышленные потребители", "241" },
+	    { "Сельскохозяйственные товаропроизводители", "251" },
+	    { "Бюджетные потребители", "261" },
+	    { "Другие энергоснабжающие организации", "271" },
+	    {
+		    "Потребители с максимальной мощностью принадлежащих им энергопринимающих устройств от 150 кВт до 670 кВт",
+		    "300" },
+	    { "Промышленные и приравненные к ним потребители", "311" },
+	    { "Электрифицированный железнодорожный транспорт", "321" },
+	    { "Электрифицированный городской транспорт", "331" },
+	    { "Непромышленные потребители", "341" },
+	    { "Сельскохозяйственные товаропроизводители", "351" },
+	    { "Бюджетные потребители", "361" },
+	    { "Другие энергоснабжающие организации", "371" },
+	    {
+		    "Потребители с максимальной мощностью принадлежащих им энергопринимающих устройств до 150 кВт",
+		    "400" },
+	    { "Промышленные и приравненные к ним потребители", "411" },
+	    { "Электрифицированный железнодорожный транспорт", "421" },
+	    { "Электрифицированный городской транспорт", "431" },
+	    { "Непромышленные потребители", "441" },
+	    { "Сельскохозяйственные товаропроизводители", "451" },
+	    { "Бюджетные потребители", "461" },
+	    { "Другие энергоснабжающие организации", "471" },
+	    {
+		    "Компенсация расхода электрической энергии на передачу сетевыми организациями",
+		    "500" },
+	    { "Полезный отпуск - всего", "600" } };
+
+    String[][] mOtpusk_3 = {
+	    { "Население, всего", "100" },
+	    { "в пределах социальной нормы", "110" },
+	    { "сверх социальной нормы", "120" },
+	    {
+		    "Население, проживающее в городских населенных пунктах в домах, не оборудованных в установленном порядке стационарными электроплитами и (или) электроотопительными установками",
+		    "200" },
+	    { "в пределах социальной нормы", "210" },
+	    { "сверх социальной нормы", "220" },
+	    {
+		    "Население, проживающее в городских населенных пунктах в домах, оборудованных в установленном порядке стационарными электроплитами",
+		    "230" },
+	    { "в пределах социальной нормы", "240" },
+	    { "сверх социальной нормы", "250" },
+	    {
+		    "Население, проживающее в городских населенных пунктах в домах, оборудованных в установленном порядке стационарными электроотопительными установками",
+		    "260" },
+	    { "в пределах социальной нормы", " 270" },
+	    { "сверх социальной нормы", " 280" },
+	    {
+		    "Население, проживающее в городских населенных пунктах в домах, оборудованных в установленном порядке стационарными электроплитами и электроотопительными установками",
+		    "290" },
+	    { "в пределах социальной нормы", " 300" },
+	    { "сверх социальной нормы", "310" },
+	    { "Население, проживающее в сельских населенных пунктах", "320" },
+	    { "в пределах социальной нормы", "330" },
+	    { "сверх социальной нормы", "340" },
+	    { "Потребители, приравненные к населению, всего", "400" },
+	    { "в пределах социальной нормы", "410" },
+	    { "сверх социальной нормы", "420" },
+	    { "в том числе:", "430" },
+	    { "Исполнители коммунальных услуг", "440" },
+	    { "в пределах социальной нормы", "450" },
+	    { "сверх социальной нормы", "460" },
+	    {
+		    "Садоводческие, огороднические или дачные некоммерческие объединения граждан",
+		    "470" },
+	    { "в пределах социальной нормы", "480" },
+	    { "сверх социальной нормы", "490" },
+	    { "Религиозные организации", "500" },
+	    { "в пределах социальной нормы", "510" },
+	    { "сверх социальной нормы", "520" },
+	    {
+		    "Бюджетные организации (проживание военнослужащих, содержание осужденных)",
+		    "530" },
+	    { "в пределах социальной нормы", "540" },
+	    { "сверх социальной нормы", "550" },
+	    {
+		    "Некоммерческие объединения граждан  (гаражно-строительные, гаражные кооперативы)",
+		    "560" },
+	    { "в пределах социальной нормы", "570" },
+	    { "сверх социальной нормы", "580" },
+	    { "Хозяйственные постройки физических лиц", "590" },
+	    { "в пределах социальной нормы", "600" },
+	    { "сверх социальной нормы", "610" },
+	    {
+		    "Гарантирующие поставщики, энергосбытовые, энергоснабжающие организации, приобретающие электрическую энергию (мощность) в целях дальнейшей продажи населению",
+		    "700" },
+	    { "в пределах социальной нормы", "710" },
+	    { "сверх социальной нормы", "720" }
+
+    };
+
+    String[][] mOtpusk_6 = {
+	    { "Продажа", "300" },
+	    { "В обеспечение СД", "301" },
+	    { "В обеспечение регулируемых договоров (РД)", "302" },
+	    { "В обеспечение биржевых СДМ", "303" },
+	    { "В обеспечение внебиржевых СДМ", "304" },
+	    { "По договорам предоставления мощности ДПМ", "305" },
+	    { "По ценам РСВ", "306" },
+	    { "БР", "307" },
+	    { "Экспортно-импортная и приграничная торговля", "308" },
+	    { "По результатам КОМ", "309" },
+	    { "На оптовом рынке по регулируемым ценам", "310" },
+	    { "На оптовом рынке по нерегулируемым ценам", "311" },
+	    { "На розничном рынке по регулируемым тарифам (ценам)", "312" },
+	    { "На розничном рынке по свободным (нерегулируемым) ценам", "313" },
+	    { "Собственное производство", "400" },
+	    { "Мощность, заявленная на КОМ", "500" },
+	    { "Аттестованная мощность", "600" },
+	    { "Штрафные санкции ЦФР", "700" } };
+
+    String[][] mOtpusk_7 = {
+	    { "Покупка", "100" },
+	    { "В обеспечение СД", "101" },
+	    { "В обеспечение регулируемых договоров (РД)", "102" },
+	    { "В обеспечение биржевых СДМ", "103" },
+	    { "В обеспечение внебиржевых СДМ", "104" },
+	    { "По договорам предоставления мощности ДПМ", "105" },
+	    { "По ценам РСВ", "106" },
+	    { "БР", "107" },
+	    { "Экспортно-импортная и приграничная торговля", "108" },
+	    { "По результатам КОМ", "109" },
+	    { "На оптовом рынке по регулируемым ценам", "110" },
+	    { "На оптовом рынке по нерегулируемым ценам", "111" },
+	    { "На розничном рынке по регулируемым тарифам (ценам)", "112" },
+	    { "На розничном рынке по свободным (нерегулируемым) ценам", "113" },
+	    { "Итого покупка с учетом продажи", "114" },
+	    { "Собственное потребление", "200" } };
+
+    String[] arg = { "Всего", "ВН", "СН1", "СН2", "НН", "ФСК", "ГН" };
+    String[] arg2 = { "Всего", "Прочие", "ФСК", "ГН" };
+
+    String[] o1 = {
+	    "Объем электрической энергии потребителей, осуществляющих оплату по одноставочным тарифам (ценам) за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии потребителей, осуществляющих оплату по одноставочным тарифам (ценам) за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии потребителей, осуществляющих оплату по зонным тарифам (ценам) за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии потребителей, осуществляющих оплату по зонным тарифам (ценам) за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии потребителей, осуществляющих оплату по трехставочным тарифам (ценам) за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии потребителей, осуществляющих оплату по трехставочным тарифам (ценам) за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической мощности потребителей, осуществляющих оплату услуг по передаче электрической энергии по трехставочным ценам за отчетный месяц (год), МВт",
+	    "Стоимость электрической мощности потребителей, осуществляющих оплату услуг по передаче электрической энергии по трехставочным ценам за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии за отчетный месяц (год) без НДС, тыс руб",
+	    "Стоимость электрической энергии (мощности) без учета стоимости отклонений за отчетный месяц (год) без НДС, по двухставочным тарифам (ценам) за отчетный месяц (год) без НДС, тыс руб",
+	    "Стоимость отклонений фактических объемов потребления электрической энергии от плановых (договорных) значений за отчетный  месяц (год) без НДС, тыс руб" };
+
+    String[] o2 = {
+	    "Объем электрической энергии потребителей, осуществляющих оплату по одноставочным тарифам (ценам) за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии потребителей, осуществляющих оплату по одноставочным тарифам (ценам) за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии потребителей, осуществляющих оплату по зонным тарифам (ценам) за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии потребителей, осуществляющих оплату по зонным тарифам (ценам) за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии потребителей, осуществляющих оплату по трехставочным тарифам (ценам) за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии потребителей, осуществляющих оплату по трехставочным тарифам (ценам) за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии за отчетный месяц (год) без НДС, тыс руб",
+	    "Стоимость электрической энергии (мощности) без учета стоимости отклонений за отчетный месяц (год) без НДС, по двухставочным тарифам (ценам) за отчетный месяц (год) без НДС, тыс руб",
+	    "Стоимость отклонений фактических объемов потребления электрической энергии от плановых (договорных) значений за отчетный месяц (год) без НДС, тыс руб" };
+
+    String[] o3 = {
+	    "Объем электрической энергии за отчетный месяц (год), тыс кВт ч всего",
+	    "Стоимость электрической энергии за отчетный месяц (год) с НДС, тыс руб всего",
+	    "Стоимость электрической энергии за отчетный месяц (год) без НДС, тыс руб всего",
+	    "Объем электрической энергии потребителей, осуществляющих оплату по одноставочному тарифу за отчетный месяц (год), тыс кВт ч всего",
+	    "Стоимость электрической энергии потребителей, осуществляющих оплату по одноставочному тарифу за отчетный месяц (год) с НДС, тыс руб всего",
+	    "Стоимость электрической энергии потребителей, осуществляющих оплату по одноставочному тарифу за отчетный месяц (год) без НДС,  тыс руб всего" };
+
+    String[] o4 = {
+	    "Объем электрической энергии (мощности) потребителей за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии (мощности) потребителей за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии (мощности) потребителей за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии (мощности) потребителей за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии потребителей за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии потребителей за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической мощности за отчетный месяц (год), МВт",
+	    "Стоимость электрической мощности за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии потребителей за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии потребителей за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической мощности за отчетный месяц (год), МВт",
+	    "Стоимость электрической мощности за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем мощности услуг по передаче электроэнергии потребителей за отчетный месяц (год), МВт",
+	    "Стоимость мощности услуг по передаче электроэнергии потребителей за отчетный месяц (год) без НДС, тыс руб",
+	    "Стоимость электрической энергии (мощности) по 3-6 ценовой категории без учета стоимости отклонений за отчетный месяц (год) без НДС, тыс руб",
+	    "Стоимость отклонений фактических объемов потребления электрической энергии по 5 и 6 ценовой категории от плановых (договорных) значений за отчетный месяц (год) без НДС, тыс руб" };
+
+    String[] o5 = {
+	    "Объем электрической энергии (мощности) потребителей за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии (мощности) потребителей за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии (мощности) потребителей за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии (мощности) потребителей за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии потребителей за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии потребителей за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической мощности за отчетный месяц (год), МВт",
+	    "Стоимость электрической мощности за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической энергии за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии за отчетный месяц (год) без НДС, тыс руб",
+	    "Объем электрической мощности за отчетный месяц (год), МВт",
+	    "Стоимость электрической мощности за отчетный месяц (год) без НДС, тыс руб",
+	    "Стоимость электрической энергии по 3-6 ценовой категории без учета стоимости отклонений за отчетный месяц (год) без НДС, тыс руб",
+	    "Стоимость отклонений фактических объемов потребления электрической энергии по 5 и 6 ценовой категории от плановых (договорных) значений за отчетный месяц (год) без НДС, тыс руб" };
+
+    String[] o6 = {
+	    "Объем электрической энергии за отчетный месяц (год), тыс кВт ч",
+	    "Стоимость электрической энергии за отчетный месяц (год), тыс руб",
+	    "Величина электрической мощности за отчетный месяц (в среднем за год), МВт",
+	    "Стоимость электрической мощности за отчетный месяц (год), тыс руб",
+	    "Стоимость без дифференциации на энергию и мощность за отчетный месяц (год), тыс руб" };
+
+    private ConnectionBD connect;
 
     public ToExcelSbut(String name, String inn, String year) {
 	WorkbookSettings ws = new WorkbookSettings();
@@ -157,64 +397,754 @@ public class ToExcelSbut {
 	    tahoma9ptLeftBoldGray.setBorder(Border.ALL, BorderLineStyle.THIN);
 	    tahoma9ptLeftBoldGray.setBackground(Colour.GRAY_25);
 
+	    String fileName = inn;
+
+	    if (inn.equals("4632116134"))
+		fileName = "ГРИНН Энергосбыт";
+
+	    if (inn.equals("4028033356"))
+		fileName = "Каскад Энергосбыт";
+
+	    if (inn.equals("4029030252"))
+		fileName = "КСК";
+
+	    if (inn.equals("7704181109"))
+		fileName = "МАРЭМ";
+
+	    if (inn.equals("4029027570"))
+		fileName = "Облэнергосбыт";
+
+	    if (inn.equals("7704731218"))
+		fileName = "Оборонэнергосбыт";
+
+	    if (inn.equals("7706284124"))
+		fileName = "Русэнергосбыт";
+
+	    if (inn.equals("4633017746"))
+		fileName = "Региональная энергосбытовая комп";
+
+	    if (inn.equals("6829012680"))
+		fileName = "КВАДРА";
+
+	    if (inn.equals("7736520080"))
+		fileName = "Мосэнергосбыт";
+
 	    String dt = new SimpleDateFormat("dd.MM.yy").format(Calendar
 		    .getInstance().getTime());
 
-	    if (inn.equals("4632116134"))
-		inn = "ГРИНН Энергосбыт";
+	    String dir = "Сбытовые комп. - структура факт. сети  " + this.year
+		    + "(" + dt + ")";
 
-	    if (inn.equals("4028033356"))
-		inn = "Каскад Энергосбыт";
-
-	    if (inn.equals("4029030252"))
-		inn = "КСК";
-
-	    if (inn.equals("7704181109"))
-		inn = "МАРЭМ";
-
-	    if (inn.equals("4029027570"))
-		inn = "Облэнергосбыт";
-
-	    if (inn.equals("7704731218"))
-		inn = "Оборонэнергосбыт";
-
-	    if (inn.equals("7706284124"))
-		inn = "Русэнергосбыт";
-
-	    if (inn.equals("4633017746"))
-		inn = "Региональная энергосбытовая комп";
-
-	    if (inn.equals("6829012680"))
-		inn = "КВАДРА";
-
-	    if (inn.equals("7736520080"))
-		inn = "Мосэнергосбыт";
-
-	    new File("Сбытовые комп. - структура факт. сети  2012(" + dt + ")")
-		    .mkdirs();
+	    new File(dir).mkdirs();
 	    // создание книги
-	    WritableWorkbook workbook = Workbook.createWorkbook(new File(
-		    "Сбытовые комп. - структура факт. сети  2012(" + dt + ")/"
-			    + inn + ".xls"), ws);
+	    WritableWorkbook workbook = Workbook.createWorkbook(new File(dir
+		    + "/" + fileName + ".xls"), ws);
 
-	    otpusk1(workbook.createSheet("Отпуск ээ по рег тар", 0), name);
-	    otpusk2(workbook.createSheet("Отпуск ээ по рег тар (насел)", 1),
-		    name);
-	    otpusk3(workbook.createSheet("Отпуск мощности по рег тар", 2), name);
-	    otpusk4(workbook.createSheet("Отпуск ээ по нерег ценам", 3), name);
-	    otpusk5(workbook.createSheet("Отпуск мощности по нерег ценам", 4),
-		    name);
-	    otpusk6(workbook.createSheet("Продажа", 5), name);
-	    otpusk7(workbook.createSheet("Покупка", 6), name);
+	    connect = new ConnectionBD();
 
+	    otpusk_1(workbook.createSheet("Раздел I. А", 0), inn);
+	    otpusk_2(workbook.createSheet("Раздел I. Б", 1), inn);
+	    otpusk_3(workbook.createSheet("Раздел I. В", 2), inn);
+	    otpusk_4(workbook.createSheet("Раздел II. А", 3), inn);
+	    otpusk_5(workbook.createSheet("Раздел II. Б", 4), inn);
+	    otpusk_6(workbook.createSheet("Раздел III", 5), inn);
+	    otpusk_7(workbook.createSheet("Раздел IV", 6), inn);
+	    // otpusk2(workbook.createSheet("Отпуск ээ по рег тар (насел)", 1),
+	    // name);
+	    // otpusk3(workbook.createSheet("Отпуск мощности по рег тар", 2),
+	    // name);
+	    // otpusk4(workbook.createSheet("Отпуск ээ по нерег ценам", 3),
+	    // name);
+	    // otpusk5(workbook.createSheet("Отпуск мощности по нерег ценам",
+	    // 4),
+	    // name);
+	    // otpusk6(workbook.createSheet("Продажа", 5), name);
+	    // otpusk7(workbook.createSheet("Покупка", 6), name);
+
+	    connect.close();
 	    // закрываем книгу
 	    workbook.write();
 	    workbook.close();
 	} catch (IOException e) {
 	    e.printStackTrace();
 	} catch (WriteException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
+	}
+    }
+
+    private void otpusk_1(WritableSheet sheet, String inn)
+	    throws RowsExceededException, WriteException {
+
+	String title = "Раздел I. Полезный отпуск электроэнергии и мощности, реализуемой по регулируемым тарифам (ценам)";
+	int countRows = 40;
+	int countLines = 14;
+
+	int countTables = 12;
+	int countColInTable = 7;
+
+	int startRow = 0;
+	int startCol = 0;
+
+	int[] arg1 = {
+		countRows,
+		countLines,
+		countTables,
+		countColInTable,
+		startRow,
+		startCol };
+
+	Vector<Vector<Vector<Vector<String>>>> re = connect.getInfoSbut(inn,
+		year, 0, 11);
+
+	sbut_otpusk(title, re, arg1, sheet, inn, o1);
+    }
+
+    private void otpusk_2(WritableSheet sheet, String inn)
+	    throws RowsExceededException, WriteException {
+
+	String title = "Раздел I. Полезный отпуск электроэнергии и мощности, реализуемой по регулируемым тарифам (ценам)";
+	int countRows = 40;
+	int countLines = 14;
+
+	int countTables = 10;
+	int countColInTable = 7;
+
+	int startRow = 0;
+	int startCol = 0;
+
+	int[] arg1 = {
+		countRows,
+		countLines,
+		countTables,
+		countColInTable,
+		startRow,
+		startCol };
+
+	Vector<Vector<Vector<Vector<String>>>> re = connect.getInfoSbut(inn,
+		year, 12, 21);
+
+	sbut_otpusk(title, re, arg1, sheet, inn, o2);
+    }
+
+    private void otpusk_3(WritableSheet sheet, String inn)
+	    throws RowsExceededException, WriteException {
+
+	String title = "Раздел I. Полезный отпуск электроэнергии и мощности, реализуемой по регулируемым тарифам (ценам)";
+	int countRows = 50;
+	int countLines = 14;
+
+	int countTables = 1;
+	int countColInTable = 15;
+
+	int startRow = 0;
+	int startCol = 0;
+
+	int[] arg1 = {
+		countRows,
+		countLines,
+		countTables,
+		countColInTable,
+		startRow,
+		startCol };
+
+	Vector<Vector<Vector<Vector<String>>>> re = connect.getInfoSbut_nas(
+		inn, year, 0, 0);
+
+	sbut_nas(title, re, arg1, sheet, inn, o3);
+    }
+
+    private void otpusk_4(WritableSheet sheet, String inn)
+	    throws RowsExceededException, WriteException {
+
+	String title = "Раздел II. Полезный отпуск электроэнергии и мощности, реализуемой по нерегулируемым ценам";
+	int countRows = 40;
+	int countLines = 14;
+
+	int countTables = 16;
+	int countColInTable = 7;
+
+	int startRow = 0;
+	int startCol = 0;
+
+	int[] arg1 = {
+		countRows,
+		countLines,
+		countTables,
+		countColInTable,
+		startRow,
+		startCol };
+
+	Vector<Vector<Vector<Vector<String>>>> re = connect.getInfoSbut(inn,
+		year, 22, 37);
+
+	sbut_otpusk(title, re, arg1, sheet, inn, o4);
+    }
+
+    private void otpusk_5(WritableSheet sheet, String inn)
+	    throws RowsExceededException, WriteException {
+
+	String title = "Раздел II. Полезный отпуск электроэнергии и мощности, реализуемой по нерегулируемым ценам";
+	int countRows = 40;
+	int countLines = 14;
+
+	int countTables = 14;
+	int countColInTable = 4;
+
+	int startRow = 0;
+	int startCol = 0;
+
+	int[] arg1 = {
+		countRows,
+		countLines,
+		countTables,
+		countColInTable,
+		startRow,
+		startCol };
+
+	Vector<Vector<Vector<Vector<String>>>> re = connect.getInfoSbut_2(inn,
+		year, 0, 13);
+
+	sbut_otpusk2(title, re, arg1, sheet, inn, o5);
+    }
+
+    private void otpusk_6(WritableSheet sheet, String inn)
+	    throws RowsExceededException, WriteException {
+
+	String title = "Раздел III. Продажа электрической энергии и мощности";
+	int countRows = 25;
+	int countLines = 14;
+
+	int countTables = 1;
+	int countColInTable = 5;
+
+	int startRow = 0;
+	int startCol = 0;
+
+	int[] arg1 = {
+		countRows,
+		countLines,
+		countTables,
+		countColInTable,
+		startRow,
+		startCol };
+
+	Vector<Vector<Vector<Vector<String>>>> re = connect.getInfoSbut_sb(inn,
+		year, 0, 0, "sell");
+
+	sbut_sell_buy(title, re, arg1, sheet, inn, o6, "sell");
+    }
+    
+    private void otpusk_7(WritableSheet sheet, String inn)
+	    throws RowsExceededException, WriteException {
+
+	String title = "Раздел III. Покупка электрической энергии и мощности";
+	int countRows = 25;
+	int countLines = 14;
+
+	int countTables = 1;
+	int countColInTable = 5;
+
+	int startRow = 0;
+	int startCol = 0;
+
+	int[] arg1 = {
+		countRows,
+		countLines,
+		countTables,
+		countColInTable,
+		startRow,
+		startCol };
+
+	Vector<Vector<Vector<Vector<String>>>> re = connect.getInfoSbut_sb(inn,
+		year, 0, 0, "buy");
+
+	sbut_sell_buy(title, re, arg1, sheet, inn, o6, "buy");
+    }
+
+    private void sbut_otpusk(String title,
+	    Vector<Vector<Vector<Vector<String>>>> re, int[] arg1,
+	    WritableSheet sheet, String inn, String[] ot)
+	    throws RowsExceededException, WriteException {
+
+	int countRows = arg1[0];
+	int countLines = arg1[1];
+
+	int countTables = arg1[2];
+	int countColInTable = arg1[3];
+
+	int startRow = arg1[4];
+	int startCol = arg1[5];
+
+	int titleCol = startCol;
+	int titleRow = startRow + 1;
+
+	sheet.addCell(new Label(titleCol, titleRow, title, tahoma12ptBold));
+
+	sheet.mergeCells(titleCol, titleRow, titleCol + 10, titleRow);
+	sheet.setRowView(titleRow, 750);
+
+	for (int p = 3; p < 3 + countRows * countLines; p++)
+	    sheet.setRowView(p, 450);
+
+	sheet.setColumnView(0, 75);
+
+	startRow += 3;
+	for (int p = startRow - 1; p < startRow + countTables * countColInTable; p++)
+	    sheet.setColumnView(p, 15);
+
+	for (int index = 0; index < months.length; index++) {
+
+	    String month = months[index];
+
+	    Vector<Vector<Vector<String>>> result = re.get(index);
+
+	    int dindex = index * countRows;
+
+	    sheet.addCell(new Label(startCol, startRow + dindex, month,
+		    tahoma12ptBold));
+
+	    sheet.addCell(new Label(startCol, startRow + 1 + dindex,
+		    "Потребители", tahoma9pt));
+	    sheet.mergeCells(startCol, startRow + 1 + dindex, startCol,
+		    startRow + 2 + dindex);
+
+	    sheet.addCell(new Label(startCol + 1, 3 + dindex, "Код строки",
+		    tahoma9pt));
+	    sheet.mergeCells(startCol + 1, startRow + dindex, startCol + 1,
+		    startRow + 2 + dindex);
+
+	    for (int num = 0; num < mOtpusk_1.length; num++) {
+		int column = startCol;
+		int row = startRow + 3 + num + dindex;
+
+		sheet.addCell(new Label(column, row, mOtpusk_1[num][0],
+			tahoma9ptLeft));
+		sheet.addCell(new Label(column + 1, row, mOtpusk_1[num][1],
+			tahoma9pt));
+	    }
+
+	    for (int table = 0; table < result.size(); table++) {
+
+		int column = startCol + countColInTable * table;
+
+		Vector<Vector<String>> r = result.get(table);
+
+		for (int num = 0; num < r.size(); num++) {
+		    int row = startRow + 3 + num + dindex;
+
+		    for (int p = 0; p < r.get(num).size(); p++) {
+
+			WritableCellFormat css = tahoma9ptYellow;
+			String value = r.get(num).get(p);
+
+			if (p == 0)
+			    css = tahoma9ptORANGE;
+
+			if (month == "итог") {
+			    String itsgod = "";
+
+			    try {
+				itsgod = re.get(index - 1).get(table).get(num)
+					.get(p);
+			    } catch (Exception e) {
+			    }
+
+			    if (parseStringToDouble(value).doubleValue() != parseStringToDouble(
+				    itsgod).doubleValue())
+				css = tahoma9ptRed;
+			}
+
+			sheet.addCell(new Label(column + 2 + p, row, value, css));
+		    }
+		}
+	    }
+
+	    for (int i = 0; i < ot.length; i++) {
+		int column = startCol + 2;
+		int row = startRow + dindex;
+		int di = i * countColInTable;
+
+		sheet.addCell(new Label(column + di, row, ot[i], tahoma9pt));
+		sheet.mergeCells(column + di, row, column + di
+			+ countColInTable - 1, row + 1);
+
+		row += 2;
+		for (int p = 0; p < arg.length; p++) {
+		    int dp = di + p;
+
+		    sheet.addCell(new Label(column + dp, row, arg[p], tahoma9pt));
+		}
+	    }
+	}
+    }
+
+    private void sbut_otpusk2(String title,
+	    Vector<Vector<Vector<Vector<String>>>> re, int[] arg1,
+	    WritableSheet sheet, String inn, String[] ot)
+	    throws RowsExceededException, WriteException {
+
+	int countRows = arg1[0];
+	int countLines = arg1[1];
+
+	int countTables = arg1[2];
+	int countColInTable = arg1[3];
+
+	int startRow = arg1[4];
+	int startCol = arg1[5];
+
+	int titleCol = startCol;
+	int titleRow = startRow + 1;
+
+	sheet.addCell(new Label(titleCol, titleRow, title, tahoma12ptBold));
+
+	sheet.mergeCells(titleCol, titleRow, titleCol + 10, titleRow);
+	sheet.setRowView(titleRow, 750);
+
+	for (int p = 3; p < 3 + countRows * countLines; p++)
+	    sheet.setRowView(p, 450);
+
+	sheet.setColumnView(0, 75);
+
+	startRow += 3;
+	for (int p = startRow - 1; p < startRow + countTables * countColInTable; p++)
+	    sheet.setColumnView(p, 15);
+
+	for (int index = 0; index < months.length; index++) {
+
+	    String month = months[index];
+
+	    Vector<Vector<Vector<String>>> result = re.get(index);
+
+	    int dindex = index * countRows;
+
+	    sheet.addCell(new Label(startCol, startRow + dindex, month,
+		    tahoma12ptBold));
+
+	    sheet.addCell(new Label(startCol, startRow + 1 + dindex,
+		    "Потребители", tahoma9pt));
+	    sheet.mergeCells(startCol, startRow + 1 + dindex, startCol,
+		    startRow + 2 + dindex);
+
+	    sheet.addCell(new Label(startCol + 1, 3 + dindex, "Код строки",
+		    tahoma9pt));
+	    sheet.mergeCells(startCol + 1, startRow + dindex, startCol + 1,
+		    startRow + 2 + dindex);
+
+	    for (int num = 0; num < mOtpusk_1.length; num++) {
+		int column = startCol;
+		int row = startRow + 3 + num + dindex;
+
+		sheet.addCell(new Label(column, row, mOtpusk_1[num][0],
+			tahoma9ptLeft));
+		sheet.addCell(new Label(column + 1, row, mOtpusk_1[num][1],
+			tahoma9pt));
+	    }
+
+	    for (int table = 0; table < result.size(); table++) {
+
+		int column = startCol + countColInTable * table;
+
+		Vector<Vector<String>> r = result.get(table);
+
+		for (int num = 0; num < r.size(); num++) {
+		    int row = startRow + 3 + num + dindex;
+
+		    for (int p = 0; p < r.get(num).size(); p++) {
+
+			WritableCellFormat css = tahoma9ptYellow;
+			String value = r.get(num).get(p);
+
+			if (p == 0)
+			    css = tahoma9ptORANGE;
+
+			if (month == "итог") {
+			    String itsgod = "";
+
+			    try {
+				itsgod = re.get(index - 1).get(table).get(num)
+					.get(p);
+			    } catch (Exception e) {
+			    }
+
+			    if (parseStringToDouble(value).doubleValue() != parseStringToDouble(
+				    itsgod).doubleValue())
+				css = tahoma9ptRed;
+			}
+
+			sheet.addCell(new Label(column + 2 + p, row, value, css));
+		    }
+		}
+	    }
+
+	    for (int i = 0; i < ot.length; i++) {
+		int column = startCol + 2;
+		int row = startRow + dindex;
+		int di = i * countColInTable;
+
+		sheet.addCell(new Label(column + di, row, ot[i], tahoma9pt));
+		sheet.mergeCells(column + di, row, column + di
+			+ countColInTable - 1, row + 1);
+
+		row += 2;
+		for (int p = 0; p < arg2.length; p++) {
+		    int dp = di + p;
+
+		    sheet.addCell(new Label(column + dp, row, arg2[p],
+			    tahoma9pt));
+		}
+	    }
+	}
+    }
+
+    private void sbut_nas(String title,
+	    Vector<Vector<Vector<Vector<String>>>> re, int[] arg1,
+	    WritableSheet sheet, String inn, String[] ot)
+	    throws RowsExceededException, WriteException {
+
+	int countRows = arg1[0];
+	int countLines = arg1[1];
+
+	int countTables = arg1[2];
+	int countColInTable = arg1[3];
+
+	int startRow = arg1[4];
+	int startCol = arg1[5];
+
+	int titleCol = startCol;
+	int titleRow = startRow + 1;
+
+	sheet.addCell(new Label(titleCol, titleRow, title, tahoma12ptBold));
+
+	sheet.mergeCells(titleCol, titleRow, titleCol + 10, titleRow);
+	sheet.setRowView(titleRow, 750);
+
+	for (int p = 3; p < 3 + countRows * countLines; p++)
+	    sheet.setRowView(p, 450);
+
+	sheet.setColumnView(0, 75);
+
+	startRow += 3;
+	for (int p = startRow - 1; p < startRow + countTables * countColInTable; p++)
+	    sheet.setColumnView(p, 15);
+
+	for (int index = 0; index < months.length; index++) {
+
+	    String month = months[index];
+
+	    Vector<Vector<Vector<String>>> result = re.get(index);
+
+	    int dindex = index * countRows;
+
+	    sheet.addCell(new Label(startCol, startRow + dindex, month,
+		    tahoma12ptBold));
+
+	    sheet.addCell(new Label(startCol, startRow + 1 + dindex,
+		    "Потребители", tahoma9pt));
+	    sheet.mergeCells(startCol, startRow + 1 + dindex, startCol,
+		    startRow + 2 + dindex);
+
+	    sheet.addCell(new Label(startCol + 1, 3 + dindex, "Код строки",
+		    tahoma9pt));
+	    sheet.mergeCells(startCol + 1, startRow + dindex, startCol + 1,
+		    startRow + 2 + dindex);
+
+	    for (int num = 0; num < mOtpusk_3.length; num++) {
+		int column = startCol;
+		int row = startRow + 3 + num + dindex;
+
+		sheet.addCell(new Label(column, row, mOtpusk_3[num][0],
+			tahoma9ptLeft));
+		sheet.addCell(new Label(column + 1, row, mOtpusk_3[num][1],
+			tahoma9pt));
+	    }
+
+	    for (int table = 0; table < result.size(); table++) {
+
+		int column = startCol + countColInTable * table;
+
+		Vector<Vector<String>> r = result.get(table);
+
+		for (int num = 0; num < r.size(); num++) {
+		    int row = startRow + 3 + num + dindex;
+
+		    for (int p = 0; p < r.get(num).size(); p++) {
+
+			WritableCellFormat css = tahoma9ptYellow;
+			String value = r.get(num).get(p);
+
+			if (p == 0)
+			    css = tahoma9ptORANGE;
+
+			if (month == "итог") {
+			    String itsgod = "";
+
+			    try {
+				itsgod = re.get(index - 1).get(table).get(num)
+					.get(p);
+			    } catch (Exception e) {
+			    }
+
+			    if (parseStringToDouble(value).doubleValue() != parseStringToDouble(
+				    itsgod).doubleValue())
+				css = tahoma9ptRed;
+			}
+
+			sheet.addCell(new Label(column + 2 + p, row, value, css));
+		    }
+		}
+	    }
+
+	    countColInTable = 1;
+	    for (int i = 0; i < ot.length; i++) {
+		int column = startCol + 2;
+		int row = startRow + dindex;
+		int di = i * countColInTable;
+
+		sheet.addCell(new Label(column + di, row, ot[i], tahoma9pt));
+		sheet.mergeCells(column + di, row, column + di
+			+ countColInTable - 1, row + 2);
+	    }
+
+	    String[] ooooo = {
+		    "Объем электрической энергии потребителей, осуществляющих оплату по зонным тарифам за отчетный месяц (год), тыс кВт ч",
+		    "Стоимость электрической энергии потребителей, осуществляющих оплату по зонным тарифам за отчетный месяц (год) с НДС, тыс руб всего",
+		    "Стоимость электрической энергии потребителей, осуществляющих оплату по зонным тарифам за отчетный месяц (год) без НДС, тыс руб всего" };
+
+	    String[] arg = { "ночь", "пик", "полупик (день)" };
+
+	    countColInTable = 3;
+	    for (int i = 0; i < ooooo.length; i++) {
+		int column = startCol + 2;
+		int row = startRow + dindex;
+		int di = i * countColInTable + ot.length;
+
+		sheet.addCell(new Label(column + di, row, ooooo[i], tahoma9pt));
+		sheet.mergeCells(column + di, row, column + di
+			+ countColInTable - 1, row + 1);
+
+		row += 2;
+		for (int p = 0; p < arg.length; p++) {
+		    int dp = di + p;
+
+		    sheet.addCell(new Label(column + dp, row, arg[p], tahoma9pt));
+		}
+	    }
+	}
+    }
+
+    private void sbut_sell_buy(String title,
+	    Vector<Vector<Vector<Vector<String>>>> re, int[] arg1,
+	    WritableSheet sheet, String inn, String[] ot, String sb)
+	    throws RowsExceededException, WriteException {
+
+	int countRows = arg1[0];
+	int countLines = arg1[1];
+
+	int countTables = arg1[2];
+	int countColInTable = arg1[3];
+
+	int startRow = arg1[4];
+	int startCol = arg1[5];
+
+	int titleCol = startCol;
+	int titleRow = startRow + 1;
+
+	sheet.addCell(new Label(titleCol, titleRow, title, tahoma12ptBold));
+
+	sheet.mergeCells(titleCol, titleRow, titleCol + 10, titleRow);
+	sheet.setRowView(titleRow, 750);
+
+	for (int p = 3; p < 3 + countRows * countLines; p++)
+	    sheet.setRowView(p, 450);
+
+	sheet.setColumnView(0, 75);
+
+	startRow += 3;
+	for (int p = startRow - 1; p < startRow + countTables * countColInTable; p++)
+	    sheet.setColumnView(p, 15);
+
+	for (int index = 0; index < months.length; index++) {
+
+	    String month = months[index];
+
+	    Vector<Vector<Vector<String>>> result = re.get(index);
+
+	    int dindex = index * countRows;
+
+	    sheet.addCell(new Label(startCol, startRow + dindex, month,
+		    tahoma12ptBold));
+
+	    sheet.addCell(new Label(startCol, startRow + 1 + dindex,
+		    "Потребители", tahoma9pt));
+	    sheet.mergeCells(startCol, startRow + 1 + dindex, startCol,
+		    startRow + 2 + dindex);
+
+	    sheet.addCell(new Label(startCol + 1, 3 + dindex, "Код строки",
+		    tahoma9pt));
+	    sheet.mergeCells(startCol + 1, startRow + dindex, startCol + 1,
+		    startRow + 2 + dindex);
+	    
+	    
+	    String[][] toptop = mOtpusk_6;
+	    if(sb.equals("buy"))
+		toptop = mOtpusk_7;
+
+	    for (int num = 0; num < toptop.length; num++) {
+		int column = startCol;
+		int row = startRow + 3 + num + dindex;
+
+		sheet.addCell(new Label(column, row, toptop[num][0],
+			tahoma9ptLeft));
+		sheet.addCell(new Label(column + 1, row, toptop[num][1],
+			tahoma9pt));
+	    }
+
+	    for (int table = 0; table < result.size(); table++) {
+
+		int column = startCol + countColInTable * table;
+
+		Vector<Vector<String>> r = result.get(table);
+
+		for (int num = 0; num < r.size(); num++) {
+		    int row = startRow + 3 + num + dindex;
+
+		    for (int p = 0; p < r.get(num).size(); p++) {
+
+			WritableCellFormat css = tahoma9ptYellow;
+			String value = r.get(num).get(p);
+
+			if (p == 0)
+			    css = tahoma9ptORANGE;
+
+			if (month == "итог") {
+			    String itsgod = "";
+
+			    try {
+				itsgod = re.get(index - 1).get(table).get(num)
+					.get(p);
+			    } catch (Exception e) {
+			    }
+
+			    if (parseStringToDouble(value).doubleValue() != parseStringToDouble(
+				    itsgod).doubleValue())
+				css = tahoma9ptRed;
+			}
+
+			sheet.addCell(new Label(column + 2 + p, row, value, css));
+		    }
+		}
+	    }
+
+	    countColInTable = 1;
+	    for (int i = 0; i < ot.length; i++) {
+		int column = startCol + 2;
+		int row = startRow + dindex;
+		int di = i * countColInTable;
+
+		sheet.addCell(new Label(column + di, row, ot[i], tahoma9pt));
+		sheet.mergeCells(column + di, row, column + di
+			+ countColInTable - 1, row + 2);
+	    }
 	}
     }
 

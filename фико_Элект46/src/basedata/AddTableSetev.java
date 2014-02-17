@@ -84,7 +84,7 @@ public class AddTableSetev extends SwingWorker {
 	try {
 	    WorkbookSettings ws = new WorkbookSettings();
 	    ws.setLocale(new Locale("ru", "RU"));
-	    ws.setSuppressWarnings(false);
+	    ws.setSuppressWarnings(true);
 	    ws.setDrawingsDisabled(false);
 
 	    Workbook workbook = Workbook.getWorkbook(file, ws);
